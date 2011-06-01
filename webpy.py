@@ -70,7 +70,7 @@ class images:
 if __name__ == "__main__":
     createSearchTree.buildHTML()
     #make thread for musicplayer    
-    thread.start_new_thread(player.playSong, ("test",)) 
+    thread.start_new_thread(player.manager, ()) 
     app.run()
 
     	

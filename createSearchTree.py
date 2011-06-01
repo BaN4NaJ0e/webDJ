@@ -156,7 +156,7 @@ def buildHTML():
 	# get current top10 songs
 	cursor.execute("""SELECT artist,title,votes,albumart FROM musiclib WHERE votes > '0' ORDER BY votes DESC;""")
 	topvotesTuple = cursor.fetchall()
-	print topvotesTuple
+
 	chartList = []
 	for i in topvotesTuple:	
 		myChartItem = Chartitem(i[0],i[1], i[2], i[3])	
@@ -203,6 +203,6 @@ def buildHTML():
 
 	f = open('artists_gen.html', 'w')
 	f.write(str(t))
-	print "done creating html"
+	print "updated html files"
 	connection.close()
 
