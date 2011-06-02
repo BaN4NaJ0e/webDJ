@@ -2,9 +2,11 @@
 import os
 import sys
 import pprint
-import tagpy
 import sqlite3
 import shutil
+import eyeD3
+
+
 
 fileList = []
 coverArtList = []
@@ -33,14 +35,18 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS musiclib (
 # add every musicfile with id3tag information to db
 id = 0
 for file in fileList :
-    	f = tagpy.FileRef(file)
+
+	tag = eyeD3.Tag()
+     	tag.link(file)
+	if eyeD3.isMp3File(file):
+     		audioFile = eyeD3.Mp3AudioFile(file)
+
 	albumartpath = ""
 
-	# get album art path
+	# get album art path and copy all cover images to webserver folder
 	for coverpath in coverArtList :
     	    if os.path.dirname(file) == os.path.split(coverpath)[0] :
-		albumartpath = "images/"+f.tag().artist +"_" +f.tag().album +".jpg"
-		#print albumartpath 	        
+		albumartpath = "images/"+tag.getArtist() +"_" +tag.getAlbum() +".jpg"	        
 		shutil.copy2(coverpath, albumartpath)
 		break
 
@@ -52,12 +58,12 @@ for file in fileList :
 	try :
 		fileinfos = [id,
 		     file.decode('utf-8'),
-		     f.tag().artist,
-	             f.tag().title,
-		     f.tag().album, 
+		     tag.getArtist(), 
+	             tag.getTitle(),  
+		     tag.getAlbum(),  
 		     albumartpath,
-		     f.tag().year,
-		     int(f.audioProperties().length),
+		     tag.getYear(), 
+		     audioFile.getPlayTime(),
 		     0,
 		     0]	
 
@@ -66,7 +72,7 @@ for file in fileList :
 		id=id+1
 	
 	except sqlite3.ProgrammingError:
-		print ( "fehler: " +unicode(f.tag().artist)+ unicode(f.tag().title)+unicode(f.tag().album) )
+		print ( "fehler: " +unicode(tag.getArtist())+ unicode(tag.getTitle())+unicode(tag.getAlbum()) )
 
 # commit all new entries
 connection.commit()
@@ -74,7 +80,7 @@ connection.commit()
 # abfragen aller artists ohne doppelte einträge
 cursor.execute("""SELECT DISTINCT artist FROM musiclib;""")
 
-print "all artists in database: "
+print "## all artists in database: "
 for artist in cursor:
 	print(artist[0].encode('latin-1'))
 
