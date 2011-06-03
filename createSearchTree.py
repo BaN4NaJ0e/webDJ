@@ -18,11 +18,12 @@ class Track:
 	 self.runtime = runtime
 
 class Chartitem:
-     def __init__(self, artist, song, votes, albumart):
+     def __init__(self, artist, song, votes, albumart, trackid):
          self.artist = artist
          self.song = song
 	 self.votes = votes	
 	 self.albumart = albumart
+	 self.id = trackid
 	
 class SingleTrack():
 	def __init__(self, artist, title, album, albumart):
@@ -70,6 +71,19 @@ templateDef = """
 				<img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
 				<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
 				<span class="ui-li-count"> <h2> $item.votes </h2> </span>
+					<ul data-role="listview" data-theme="c">
+							<li>
+							<img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
+							<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
+							<span class="ui-li-count"> <h2> $item.votes </h2> </span>
+							<br>
+							<div data-role="controlgroup" >
+							<a href="../voted/?like=$item.id" data-ajax="false" data-role="button" data-icon="plus">Yeah!<br>I like it!</a>
+							<a href="../voted/?hate=$item.id" data-ajax="false" data-role="button" data-icon="minus">Naah!<br>Not my taste!</a>
+							<a href="../index/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+							</div
+							</li>
+					</ul>
 			  </li>
 			#end for
 		</ol>
@@ -169,12 +183,12 @@ def buildHTML():
 	artists = cursor.fetchall()
 
 	# get current top10 songs
-	cursor.execute("""SELECT artist,title,votes,albumart FROM musiclib WHERE votes > '0' ORDER BY votes DESC;""")
+	cursor.execute("""SELECT artist, title, votes, albumart, id FROM musiclib WHERE votes > '0' ORDER BY votes DESC;""")
 	topvotesTuple = cursor.fetchall()
 
 	chartList = []
 	for i in topvotesTuple:	
-		myChartItem = Chartitem(i[0],i[1], i[2], i[3])	
+		myChartItem = Chartitem(i[0],i[1], i[2], i[3], i[4])	
 		chartList.append(myChartItem)
 	
 	artistsList = []
