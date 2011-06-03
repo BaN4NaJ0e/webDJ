@@ -1,9 +1,14 @@
-hier steht bald was
-
+music playback is realized through music player daemon, so mpd and mpc should be installed and configured.
 
 pyhton libs needed:
 
 eyed3
-pygame
 cheetah
 webpy
+
+initial setup:
+run python createMusicLib.py /path/to/music
+to create the music database
+change variable musicfolder in mpdPlayer.py to /path/to/music
+run python webpy.py
+access webinterface via http://localhost:8080/index/
