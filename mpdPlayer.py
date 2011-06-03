@@ -38,7 +38,9 @@ def manager():
 			addSongs()
 			if isNotPlaying():
 				startPlaylist()
-			print nowPlaying()
+			# just for debugging
+			#print nowPlaying()
+			# don't let the script eat up all system ressources
 			time.sleep(3)	
 		else:
 			print "top 10 is empty! waiting for incoming votes"
@@ -68,12 +70,6 @@ def getTopVotedSongs():
 	# get current top songs
 	cursor.execute("""SELECT path FROM musiclib WHERE votes > '0' ORDER BY votes DESC;""")
 	currentTopSongs = cursor.fetchall()
-
-	# set number of votes back to 0
-	#if len(topvotesTuple) != 0:
-	#	t = (topvotesTuple[0])
-	#	cursor.execute("""UPDATE musiclib SET votes= 0 WHERE path==?;""", t )
-	#	connection.commit()
 
 	#print currentTopSongs	
 	connection.close()
