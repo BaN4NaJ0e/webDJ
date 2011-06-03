@@ -6,7 +6,7 @@ import createSearchTree
 
 currentTopSongs = []
 # this should be set in a config file
-musicfolder = "/Users/hideki/Downloads"
+musicfolder = "/home/joe/Musik/alben"
 
 def isNotPlaying():
 	output = subprocess.Popen(['mpc'], stdout=subprocess.PIPE).communicate()[0]
@@ -68,7 +68,7 @@ def getTopVotedSongs():
 	cursor = connection.cursor()
 	
 	# get current top songs
-	cursor.execute("""SELECT path FROM musiclib WHERE votes > '0' ORDER BY votes DESC;""")
+	cursor.execute("""SELECT path FROM musiclib WHERE votes > '0' ORDER BY votes DESC LIMIT 10;""")
 	currentTopSongs = cursor.fetchall()
 
 	#print currentTopSongs	
