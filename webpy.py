@@ -2,7 +2,7 @@
 import web
 import createSearchTree
 import os
-import player
+import mpdPlayer
 import thread
         
 render = web.template.render('')
@@ -70,7 +70,7 @@ class images:
 if __name__ == "__main__":
     createSearchTree.buildHTML()
     #make thread for musicplayer    
-    thread.start_new_thread(player.manager, ()) 
+    thread.start_new_thread(mpdPlayer.manager, ()) 
     app.run()
 
     	
