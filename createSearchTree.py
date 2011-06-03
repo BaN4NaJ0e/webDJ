@@ -1,6 +1,7 @@
 # coding: utf-8
 import sqlite3
 import pprint
+import mpdPlayer
 from Cheetah.Template import Template
 
 class Album:
@@ -22,6 +23,14 @@ class Chartitem:
          self.song = song
 	 self.votes = votes	
 	 self.albumart = albumart
+	
+class SingleTrack():
+	def __init__(self, artist, title, album, albumart):
+		self.artist = artist
+		self.title = title
+		self.album = album
+		self.albumart = albumart
+		
 
 
 # ToDO: jquery scripte offline lagern
@@ -48,10 +57,10 @@ templateDef = """
 <div data-role="content">
     <ul data-role="listview" data-theme="c"> 		
 	<li data-theme="e">Now Playing:
-			<img src="../images/album-bb.jpg" alt="AlbumArt"> 
-			<h3 class="ui-li-heading">Broken Bells</h3>
-			<p class="ui-li-heading""> <b>October</b> </p> 
-			<p class="ui-li-heading"">Broken Bells</p>
+			<img src="../$current.albumart" alt="AlbumArt"> 
+			<h3 class="ui-li-heading">$current.title</h3>
+			<p class="ui-li-heading""> <b>$current.artist</b> </p> 
+			<p class="ui-li-heading"">$current.album</p>
 	</li>
 
 	<li data-theme="e">Top 10 Songs
@@ -145,6 +154,12 @@ def handleVote(trackid, like):
 	return song
 
 def buildHTML():
+	# get current track info
+	nowPlayingTuple = mpdPlayer.nowPlaying()
+	if len(nowPlayingTuple) > 0:
+		currentTrack = SingleTrack(nowPlayingTuple[0][0],nowPlayingTuple[0][1],nowPlayingTuple[0][2],nowPlayingTuple[0][3])
+	else:
+		currentTrack = SingleTrack('Artist','Title','Album','images/no-album.png')
 	# open sqlite db connection
 	connection = sqlite3.connect("mucke.db")
 	cursor = connection.cursor()
@@ -197,7 +212,7 @@ def buildHTML():
 
 	#pprint.pprint(artistsList)
 
-	nameSpace = {'charts': chartList, 'artists': artistsList }
+	nameSpace = {'charts': chartList, 'artists': artistsList, 'current': currentTrack }
 	t = Template(templateDef, searchList=[nameSpace])
 	#print t
 
