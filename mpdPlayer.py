@@ -1,8 +1,8 @@
 import subprocess
 import time
 import sqlite3
-
 import createSearchTree
+
 
 currentTopSongs = []
 # this should be set in a config file
@@ -73,5 +73,3 @@ def getTopVotedSongs():
 
 	#print currentTopSongs	
 	connection.close()
-	# update html top10 list
-	createSearchTree.buildHTML()

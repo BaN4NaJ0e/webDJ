@@ -5,15 +5,14 @@ import os
 import mpdPlayer
 import thread
         
-render = web.template.render('')
 
 urls = (
     '/index/(.*)', 'index', '/images/(.*)', 'images', "/voted/(.*)", "voted"
 )
+
 app = web.application(urls, globals())
 
-
-# page for votes
+# html page for votes
 class voted:
     def GET(self, name):
 	# werte den query string hinter dem fragezeichen aus        
@@ -24,8 +23,7 @@ class voted:
 	# user hat fuer einen song gestimmt
 	if user_data.like != "no data":
 		# like vote in db eintragen
-		print "######## user likes song with id: " +user_data.like +" -> " +str( createSearchTree.handleVote(user_data.like, True ) )
-		createSearchTree.buildHTML()		
+		print "######## user likes song with id: " +user_data.like +" -> " +str( createSearchTree.handleVote(user_data.like, True ) )		
         	return ("""<head>
 				<meta http-equiv="refresh" content="3; URL=/index/">
 			  </head>
@@ -33,8 +31,7 @@ class voted:
 	# user gegen einen song gestimmt
 	elif user_data.hate != "no data":
 		# hate vote in db eintragen
-		print "######## user hates song with id: " +user_data.hate +" -> " +str( createSearchTree.handleVote(user_data.hate, False ) )
-		createSearchTree.buildHTML()		
+		print "######## user hates song with id: " +user_data.hate +" -> " +str( createSearchTree.handleVote(user_data.hate, False ) )		
         	return ("""<head>
 				<meta http-equiv="refresh" content="3; URL=/index/">
 			  </head>
@@ -48,8 +45,9 @@ class voted:
 # index page
 class index:        
     def GET(self, name):
-	return render.artists_gen()
-
+        indexHtml = createSearchTree.buildHTML()
+        return indexHtml
+        
 # handling images in website (albumart,..)
 class images:
     def GET(self,name):
@@ -68,8 +66,7 @@ class images:
             raise web.notfound()
 
 if __name__ == "__main__":
-    createSearchTree.buildHTML()
-    #make thread for musicplayer    
+    #make independant thread for musicplayer    
     thread.start_new_thread(mpdPlayer.manager, ()) 
     app.run()
 
