@@ -33,7 +33,7 @@ class SingleTrack():
 		self.albumart = albumart
 
 
-def handleVote(trackid, like):
+def handleVote(trackid, like, ip):
 	# open sqlite db connection
 	connection = sqlite3.connect("mucke.db")
 	cursor = connection.cursor()

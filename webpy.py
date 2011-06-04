@@ -22,7 +22,7 @@ class liked:
 		# ToDo: nachschauen ob der track gevoted werden durfte vom user. (max. votes per minutes vom user)
 	
 		# user hat fuer einen song gestimmt
-        print "######## user likes song with id: " + id +" -> " +str( createSearchTree.handleVote(id, True ) )		
+        print "######## user likes song with id: " + id +" -> " +str( createSearchTree.handleVote(id, True, userip ) )		
         raise web.seeother('/')
 				
 class hated:
@@ -30,7 +30,7 @@ class hated:
     	# user gegen einen song gestimmt
 		# hate vote in db eintragen
         userip = web.ctx.ip
-        print "######## user hates song with id: " + id +" -> " +str( createSearchTree.handleVote(id, False ) )		
+        print "######## user hates song with id: " + id +" -> " +str( createSearchTree.handleVote(id, False, userip ) )		
         raise web.seeother('/')
 	    		
 # index page
