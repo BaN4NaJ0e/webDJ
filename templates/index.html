@@ -1,0 +1,109 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>vote your song!</title>
+	 <meta charset="utf-8">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.css" />
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.js"></script>
+
+</head>
+<body class="index">
+
+<div data-role="page" id="home" >
+ 
+	 <div data-role="header">
+	 <h2>App Name</h2>
+	 </div><!-- /header -->
+
+<div data-role="content">
+    <ul data-role="listview" data-theme="c"> 
+	<li data-theme="e">Now Playing:
+			<img src="../$current.albumart" alt="AlbumArt"> 
+			<h3 class="ui-li-heading">$current.title</h3>
+			<p class="ui-li-heading""> <b>$current.artist</b> </p> 
+			<p class="ui-li-heading"">$current.album</p>
+	</li>
+
+	<li data-theme="e">Top 10 Songs
+		<ol data-role="listview" data-theme="c">
+			#for $item in $charts
+			  <li>
+				<img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
+				<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
+				<span class="ui-li-count"> <h2> $item.votes </h2> </span>
+					<ul data-role="listview" data-theme="c">
+							<li>
+							<img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
+							<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
+							<span class="ui-li-count"> <h2> $item.votes </h2> </span>
+							</li>
+							<div data-role="controlgroup">
+							<a href="../voted/?like=$item.id" data-ajax="false" data-role="button" data-icon="plus">Yeah!<br>I like it!</a>
+							<a href="../voted/?hate=$item.id" data-ajax="false" data-role="button" data-icon="minus">Naah!<br>Not my taste!</a>
+							<a href="../index/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+							</div
+
+					</ul>
+			  </li>
+			#end for
+		</ol>
+	</li>
+
+	<li data-theme="b">select song
+		<ul data-role="listview" data-theme="d" data-filter="true">
+		
+		<li data-role="list-divider">choose artist</li>
+
+	#for $artist in $artists
+		<li> $artist[0] 
+		<ul data-role="listview" data-theme="c">
+			<li data-role="list-divider">choose album</li>	
+			#for $album in $artist[1]			
+					<li>
+					<img src="../$album.coverpath" alt="albumart" class="ui-li-thumb">
+					<h3 class="ui-li-heading">$album.name</h3>
+					<p class="ui-li-desc">$album.year</p>
+						<ul data-role="listview" data-theme="c">
+						<li data-role="list-divider">choose song</li>						
+						#for $track in $artist[2]									
+						<li> 
+						    <h2 class="ui-li-heading"> $track.name </h2>
+						    <span class="ui-li-count">$track.votes</span>	      
+						      <ul data-role="listview" data-theme="c">
+							<li>
+							<img src="../$album.coverpath" alt="albumart" class="ui-li-thumb">
+							<h3 class="ui-li-heading">$artist[0] <br><i>$track.name</i>  </h3>
+							<p class="ui-li-desc">$album.name ($album.year)</p>
+							<span class="ui-li-count">$track.votes</span>
+							</li>
+							
+							<div data-role="controlgroup" >
+							<a href="../voted/?like=$track.id" data-ajax="false" data-role="button" data-icon="plus">Yeah!<br>I like it!</a>
+							<a href="../voted/?hate=$track.id" data-ajax="false" data-role="button" data-icon="minus">Naah!<br>Not my taste!</a>
+							<a href="../index/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+							</div>
+							
+						    </ul>
+						</li>
+						#end for
+						</ul>
+				</li>
+			#end for
+		</ul>				
+		</li>
+	#end for
+	</li>
+	</ul>
+
+ </div><!-- /content -->
+
+ <div data-role="footer">
+ <h4> &copy 2011 </h4>
+ </div><!-- /footer -->
+
+</div><!-- /page -->
+
+</body>
+
+</html>
