@@ -1,5 +1,9 @@
 music playback is realized through music player daemon, so mpd and mpc should be installed and configured.
 
+MPD Guide: http://mpd.wikia.com/wiki/Configuration
+mpd --create-db
+/etc/init.d/mpd restart
+
 pyhton libs needed:
 
 eyed3
