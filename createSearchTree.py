@@ -3,6 +3,7 @@ import sqlite3
 import pprint
 import mpdPlayer
 from Cheetah.Template import Template
+import votedb
 
 class Album:
     def __init__(self, name, coverpath, year):
@@ -34,22 +35,29 @@ class SingleTrack():
 
 
 def handleVote(trackid, like, ip):
-	# open sqlite db connection
-	connection = sqlite3.connect("mucke.db")
-	cursor = connection.cursor()
-	t = (trackid,)
-	cursor.execute("""SELECT  artist,title,album,votes FROM musiclib WHERE id=?;""", t )
-	song = cursor.fetchall()
-	#de-/increase number of votes for song with certain id
-	if like:
-		cursor.execute("""UPDATE musiclib SET votes= votes + 1 WHERE id==?;""", t )
-	else:
-	    # keine negative votezahl zulassen
-		if int(song[0][3]) > 0 :
-			cursor.execute("""UPDATE musiclib SET votes= votes - 1 WHERE id==?;""", t )
-	connection.commit()
-	connection.close()
-	return song
+	# check if user has enough votes left
+	if votedb.checkQuota(trackid, ip):
+		# open sqlite db connection
+		connection = sqlite3.connect("mucke.db")
+		cursor = connection.cursor()
+		t = (trackid,)
+		cursor.execute("""SELECT  artist,title,album,votes FROM musiclib WHERE id=?;""", t )
+		song = cursor.fetchall()
+		#de-/increase number of votes for song with certain id
+		if like:
+			cursor.execute("""UPDATE musiclib SET votes= votes + 1 WHERE id==?;""", t )
+		else:
+		    # keine negative votezahl zulassen
+			if int(song[0][3]) > 0 :
+				cursor.execute("""UPDATE musiclib SET votes= votes - 1 WHERE id==?;""", t )
+		connection.commit()
+		connection.close()
+
+		# put userip/trackid/timestamp in votedb	
+		votedb.insertVote(trackid, ip)
+		return song
+	else: 
+		return "## user already voted for this song"
 
 def buildHTML():
 	# get now playing track info

@@ -77,13 +77,6 @@ for file in fileList :
 # commit all new entries
 connection.commit()
 
-# abfragen aller artists ohne doppelte einträge
-cursor.execute("""SELECT DISTINCT artist FROM musiclib;""")
-
-print "## all artists in database: "
-for artist in cursor:
-	print(artist[0].encode('latin-1'))
-
 #close db
 connection.close()
 

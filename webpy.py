@@ -4,6 +4,7 @@ import createSearchTree
 import os
 import mpdPlayer
 import thread
+import votedb
         
 
 urls = (
@@ -18,19 +19,16 @@ app = web.application(urls, globals())
 # html page for votes
 class liked:
     def POST(self, id):
-    	userip = web.ctx.ip
-		# ToDo: nachschauen ob der track gevoted werden durfte vom user. (max. votes per minutes vom user)
-	
-		# user hat fuer einen song gestimmt
-        print "######## user likes song with id: " + id +" -> " +str( createSearchTree.handleVote(id, True, userip ) )		
+    	userip = web.ctx.ip	
+	# user hat fuer einen song gestimmt
+	success = createSearchTree.handleVote(id, True, userip )	
         raise web.seeother('/')
 				
 class hated:
     def POST(self, id):
-    	# user gegen einen song gestimmt
-		# hate vote in db eintragen
         userip = web.ctx.ip
-        print "######## user hates song with id: " + id +" -> " +str( createSearchTree.handleVote(id, False, userip ) )		
+    	# user hat gegen einen song gestimmt
+	success = createSearchTree.handleVote(id, False, userip )	
         raise web.seeother('/')
 	    		
 # index page
@@ -57,6 +55,8 @@ class images:
             raise web.notfound()
 
 if __name__ == "__main__":
+    # create votes per user count db
+    votedb.setupDB()
     #make independant thread for musicplayer    
     thread.start_new_thread(mpdPlayer.manager, ()) 
     app.run()
