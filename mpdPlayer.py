@@ -2,11 +2,10 @@ import subprocess
 import time
 import sqlite3
 import createSearchTree
+import settings
 
 
 currentTopSongs = []
-# this should be set in a config file
-musicfolder = "/home/joe/Musik/alben"
 
 def isNotPlaying():
 	output = subprocess.Popen(['mpc'], stdout=subprocess.PIPE).communicate()[0]
@@ -20,18 +19,31 @@ def nowPlaying():
 	cursor = connection.cursor()
 	currentfile = subprocess.Popen(['mpc','-f','"%file%"','current'], stdout=subprocess.PIPE).communicate()[0].replace('"','').rstrip()
 	# execute can't handle simple strings for substitution so lets put it in a tuple
-	currentpath = [musicfolder + "/" + currentfile]
+	currentpath = [settings.musicfolder + "/" + currentfile]
 	cursor.execute("""SELECT artist,title,album,albumart,tracklength FROM musiclib WHERE path == ?;""",currentpath)
 	nowPlayingTuple = cursor.fetchall()
-	# reset vote count for currently playing song
-	cursor.execute("""UPDATE musiclib SET votes= 0 WHERE path==?;""",currentpath)
-	connection.commit()
 	connection.close()
 	return nowPlayingTuple
 
+def resetVotes():
+	connection = sqlite3.connect("mucke.db")
+	cursor = connection.cursor()
+	currentfile = subprocess.Popen(['mpc','-f','"%file%"','current'], stdout=subprocess.PIPE).communicate()[0].replace('"','').rstrip()
+	# execute can't handle simple strings for substitution so lets put it in a tuple
+	currentpath = [settings.musicfolder + "/" + currentfile]
+	# reset votes for current song
+	cursor.execute("""UPDATE musiclib SET votes= 0 WHERE path==?;""",currentpath)
+	connection.commit()
+	connection.close()
 
+def initMPD():
+	retcode = subprocess.call(['mpc','-q','clear'])
+	retcode = subprocess.call(['mpc','-q','crossfade','5'])
+	
 def manager():
+	initMPD()
 	while(True):
+		resetVotes()
 		getTopVotedSongs()
 		
 		if len(currentTopSongs) > 0:
@@ -47,12 +59,13 @@ def manager():
 			time.sleep(5)
 
 def addSongs():
-	global currentTopSongs
+	global currentTopSongs		
 	# remove previous top hit in playlist, but keep playing current song
-	retcode = subprocess.call(['mpc','-q','crop'])
+	if len(subprocess.Popen(['mpc','playlist'], stdout=subprocess.PIPE).communicate()[0]) > 0:
+		retcode = subprocess.call(['mpc','-q','crop'])
 	for currentSongPath in currentTopSongs:
 		# make currentsongpath relative to music folder
-		mpdSongPath = currentSongPath[0].lstrip(musicfolder)
+		mpdSongPath = currentSongPath[0].lstrip(settings.musicfolder)
 		retcode = subprocess.call(['mpc','-q','add',mpdSongPath])
 	currentTopSongs = []
 
