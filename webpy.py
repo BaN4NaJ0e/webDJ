@@ -7,47 +7,38 @@ import thread
         
 
 urls = (
-    '/index/(.*)', 'index', '/images/(.*)', 'images', "/voted/(.*)", "voted"
+    '/', 'index', 
+    '/images/(.*)', 'images', 
+    '/liked/(.*)', 'liked', 
+    '/hated/(.*)', 'hated'
 )
 
 app = web.application(urls, globals())
 
 # html page for votes
-class voted:
-    def GET(self, name):
-	# werte den query string hinter dem fragezeichen aus        
-	user_data = web.input(like="no data",hate="no data")
-	userip = web.ctx.ip
-	# ToDo: nachschauen ob der track gevoted werden durfte vom user. (max. votes per minutes vom user)
+class liked:
+    def POST(self, id):
+    	userip = web.ctx.ip
+		# ToDo: nachschauen ob der track gevoted werden durfte vom user. (max. votes per minutes vom user)
 	
-	# user hat fuer einen song gestimmt
-	if user_data.like != "no data":
-		# like vote in db eintragen
-		print "######## user likes song with id: " +user_data.like +" -> " +str( createSearchTree.handleVote(user_data.like, True ) )		
-        	return ("""<head>
-				<meta http-equiv="refresh" content="3; URL=/index/">
-			  </head>
-				<h1>You liked track with id: """ + user_data.like + "</h1> <br> Your ip is: """ +userip)
-	# user gegen einen song gestimmt
-	elif user_data.hate != "no data":
+		# user hat fuer einen song gestimmt
+        print "######## user likes song with id: " + id +" -> " +str( createSearchTree.handleVote(id, True ) )		
+        raise web.seeother('/')
+				
+class hated:
+    def POST(self, id):
+    	# user gegen einen song gestimmt
 		# hate vote in db eintragen
-		print "######## user hates song with id: " +user_data.hate +" -> " +str( createSearchTree.handleVote(user_data.hate, False ) )		
-        	return ("""<head>
-				<meta http-equiv="refresh" content="3; URL=/index/">
-			  </head>
-				<h1>You disliked track with id: """ + user_data.hate + "</h1> <br> Your ip is: """ +userip)
-	# fehlerfall	
-	else:
-		return ("""<head>
-				<meta http-equiv="refresh" content="3; URL=/index/">
-			  </head>
-				<h1> error ! going back to index... </h1>""")
+        userip = web.ctx.ip
+        print "######## user hates song with id: " + id +" -> " +str( createSearchTree.handleVote(id, False ) )		
+        raise web.seeother('/')
+	    		
 # index page
 class index:        
-    def GET(self, name):
+    def GET(self):
         indexHtml = createSearchTree.buildHTML()
         return indexHtml
-        
+		    
 # handling images in website (albumart,..)
 class images:
     def GET(self,name):

@@ -19,7 +19,7 @@
 <div data-role="content">
     <ul data-role="listview" data-theme="c"> 
 	    <li data-theme="e">Now Playing:
-			    <img src="../$current.albumart" alt="AlbumArt"> 
+			    <img src="$current.albumart" alt="AlbumArt"> 
 			    <h3 class="ui-li-heading">$current.title</h3>
 			    <p class="ui-li-heading"> <b>$current.artist</b> </p> 
 			    <p class="ui-li-heading">$current.album</p>
@@ -29,19 +29,24 @@
 		    <ol data-role="listview" data-theme="c">
 			    #for $item in $charts
 			      <li>
-				    <img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
+				    <img src="$item.albumart" alt="albumart" class="ui-li-thumb">
 				    <h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
 				    <span class="ui-li-count"> <h2> $item.votes </h2> </span>
 					    <ul data-role="listview" data-theme="c">
 							    <li>
-							    <img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
+							    <img src="$item.albumart" alt="albumart" class="ui-li-thumb">
 							    <h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
 							    <span class="ui-li-count"> <h2> $item.votes </h2> </span>
 							    </li>
 							    <div data-role="controlgroup" data-theme="b">
-							    <a href="../voted/?like=$item.id" data-ajax="false" data-role="button" data-icon="plus">Yeah!<br>I like it!</a>
-							    <a href="../voted/?hate=$item.id" data-ajax="false" data-role="button" data-icon="minus">Naah!<br>Not my taste!</a>
-							    <a href="../index/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+							    	<form action="/liked/$item.id" method="post" data-ajax="false">
+										<input type="submit" value="like" data-role="button" data-icon="plus"/>
+									</form>
+									<form action="/hated/$item.id" method="post" data-ajax="false">
+										<input type="submit" value="hate" data-role="button" data-icon="minus"/>
+									</form>
+									<a href="/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+								
 						    </div>
 					    </ul>
 			      </li>
@@ -60,7 +65,7 @@
 			        <li data-role="list-divider">choose album</li>	
 			        #for $album in $artist[1]			
 					        <li>
-					        <img src="../$album.coverpath" alt="albumart" class="ui-li-thumb">
+					        <img src="$album.coverpath" alt="albumart" class="ui-li-thumb">
 					        <h3 class="ui-li-heading">$album.name</h3>
 					        <p class="ui-li-desc">$album.year</p>
 						        <ul data-role="listview" data-theme="c">
@@ -71,16 +76,21 @@
 						            <span class="ui-li-count">$track.votes</span>	      
 						              <ul data-role="listview" data-theme="c">
 							        <li>
-							        <img src="../$album.coverpath" alt="albumart" class="ui-li-thumb">
+							        <img src="$album.coverpath" alt="albumart" class="ui-li-thumb">
 							        <h3 class="ui-li-heading">$artist[0] <br><i>$track.name</i>  </h3>
 							        <p class="ui-li-desc">$album.name ($album.year)</p>
 							        <span class="ui-li-count">$track.votes</span>
 							        </li>
 							
 							        <div data-role="controlgroup" >
-							        <a href="../voted/?like=$track.id" data-ajax="false" data-role="button" data-icon="plus">Yeah!<br>I like it!</a>
-							        <a href="../voted/?hate=$track.id" data-ajax="false" data-role="button" data-icon="minus">Naah!<br>Not my taste!</a>
-							        <a href="../index/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+									<form action="/liked/$track.id" method="post" data-ajax="false">
+										<input type="submit" value="like" data-ajax="false" data-role="button" data-icon="plus"/>
+									</form>
+									<form action="/hated/$track.id" method="post" data-ajax="false">
+										<input type="submit" value="hate" data-ajax="false" data-role="button" data-icon="minus"/>
+									</form>
+									<a href="/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+							        	
 							        </div>
 							
 						            </ul>
