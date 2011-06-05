@@ -4,12 +4,14 @@ import pprint
 import mpdPlayer
 from Cheetah.Template import Template
 import votedb
+import time
 
 class Album:
-	def __init__(self, name, coverpath, year):
+	def __init__(self, name, coverpath, year, tracks):
 		self.name = name
 		self.coverpath = coverpath
 		self.year = year
+		self.tracks = tracks
 
 class Track:
 	def __init__(self, name, trackid, votes, runtime):
@@ -32,7 +34,23 @@ class SingleTrack():
 		self.title = title
 		self.album = album
 		self.albumart = albumart
+		
+class Historyitem:
+	def __init__(self, artist, songtitle, album, albumart, lastplayed):
+		self.artist = artist
+		self.songtitle = songtitle
+		self.album = album
+		self.albumart = albumart
+		self.lastplayed = lastplayed
 
+# input: time in seconds
+# output: human readable timestring
+def GetInHMS(seconds):
+    hours = seconds / 3600
+    seconds -= 3600*hours
+    minutes = seconds / 60
+    seconds -= 60*minutes
+    return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 def handleVote(trackid, like, ip):
 	# check if user has enough votes left
@@ -71,7 +89,9 @@ def buildHTML():
 	connection = sqlite3.connect("mucke.db")
 	cursor = connection.cursor()
 	
+	####################
 	# get current top10 voted songs
+	####################
 	cursor.execute("""SELECT artist, title, votes, albumart, id FROM musiclib WHERE votes > '0' ORDER BY votes DESC LIMIT 10;""")
 	topvotesTuple = cursor.fetchall()
 	
@@ -101,26 +121,47 @@ def buildHTML():
 			# get path to albumart folder.jpg and release year
 			cursor.execute("""SELECT DISTINCT albumart, year FROM musiclib WHERE album=?;""", t )
 			resultTupel = cursor.fetchall()
-			myAlbum = Album(album[0].encode('latin-1'), str(resultTupel[0][0]), str(resultTupel[0][1]))
-			alben.append(myAlbum)
 			
 			# get all tracks for each album
 			cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=?;""", t )
-			trackTuple = cursor.fetchall()
+			albumtracksTuple = cursor.fetchall()
 			tracks = []
-			#pprint.pprint( trackTuple )
-			for track in trackTuple:
+			#pprint.pprint( albumtracksTuple )
+			for track in albumtracksTuple:
+				#				title , 	id , 		votes, 	tracklength
 				myTrack = Track( track[0], track[1] , track[2], track[3])
 				tracks.append(myTrack)
 			
+			#						name					coverpath				year				all tracks
+			myAlbum = Album(album[0].encode('latin-1'), str(resultTupel[0][0]), str(resultTupel[0][1]), tracks )
+			alben.append(myAlbum)
+			
+			
 		# add all informations to tree
-		requestSongTree.append([artist[0],alben,tracks])
-	pprint.pprint(requestSongTree)
+		requestSongTree.append([artist[0], alben])
+		
+	####################
+	# HISTORY TREE
+	####################
+	cursor.execute("""SELECT artist, title, album, albumart, lastplayed FROM musiclib WHERE lastplayed > '0' ORDER BY lastplayed DESC LIMIT 10;""")
+	historyTuple = cursor.fetchall()
+	
+	historyList = []
+	for i in historyTuple:
+		# calculate time between now and moment song was played
+		timeDelta = GetInHMS( int( time.time()-float(i[4]) ) )
+		#  artist, songtitle, album, albumart, lastplayed
+		myHistoryItem = Historyitem(i[0],i[1], i[2], i[3], timeDelta)
+		historyList.append(myHistoryItem)
+	
+	# remove item that is playing now
+	if len(historyList) > 1: 
+		historyList.pop(0)
 	
 	# close db connection
 	connection.close()
 	
-	nameSpace = {'charts': chartList, 'artists': requestSongTree, 'current': currentTrack }
+	nameSpace = {'charts': chartList, 'artists': requestSongTree, 'current': currentTrack , 'history': historyList }
 	t= Template(file="templates/index.html", searchList=[nameSpace])
 	
 	print "## updated index.html"

@@ -48,6 +48,7 @@ def initMPD():
 def manager():
 	initMPD()
 	while(True):
+		# TODO das reset muss woanders hin, sonst haben wir staendig db zugriffe
 		resetVotes()
 		getTopVotedSongs()
 		
