@@ -25,6 +25,7 @@ def nowPlaying():
 	connection.close()
 	return nowPlayingTuple
 
+# reset votes to zero and write to db which time this track was played
 def resetVotes():
 	connection = sqlite3.connect("mucke.db")
 	cursor = connection.cursor()
@@ -33,6 +34,10 @@ def resetVotes():
 	currentpath = [settings.musicfolder + "/" + currentfile]
 	# reset votes for current song
 	cursor.execute("""UPDATE musiclib SET votes= 0 WHERE path==?;""",currentpath)
+	# set current time to last time played column
+	currenttime = [time.time() , settings.musicfolder + "/" + currentfile]
+	cursor.execute("""UPDATE musiclib SET lastplayed= ? WHERE path==?;""",currenttime)
+	
 	connection.commit()
 	connection.close()
 
