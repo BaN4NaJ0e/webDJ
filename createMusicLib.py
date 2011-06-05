@@ -5,12 +5,19 @@ import pprint
 import sqlite3
 import shutil
 import eyeD3
-
-
+import settings
 
 fileList = []
 coverArtList = []
-rootdir = sys.argv[1]
+
+# get musicfolder name from settings.py or from command line
+if len(sys.argv) < 2 :
+    print "importing music from folder: " + str(settings.musicfolder)
+    rootdir = settings.musicfolder
+else:
+    print "importing music from folder: " + str(sys.argv[1])
+    rootdir = sys.argv[1]
+
 
 music_extList = [".mp3", ".ogg", ".MP3",".OGG",]
 
@@ -26,6 +33,9 @@ for root, subFolders, files in os.walk(rootdir):
 # open sqlite db connection
 connection = sqlite3.connect("mucke.db")
 cursor = connection.cursor()
+
+# delete all inside the db
+cursor.execute("""DROP TABLE IF EXISTS musiclib """)
 
 # Pfad / Artist / Title / Album / Tracklaenge / Votes / LastTimePlayed in seconds
 
@@ -59,7 +69,7 @@ for file in fileList :
 		fileinfos = [id,
 		     file.decode('utf-8'),
 		     tag.getArtist(), 
-	             tag.getTitle(),  
+	         tag.getTitle(),  
 		     tag.getAlbum(),  
 		     albumartpath,
 		     tag.getYear(), 
