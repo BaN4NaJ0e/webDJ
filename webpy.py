@@ -5,13 +5,16 @@ import os
 import mpdPlayer
 import thread
 import votedb
-        
+from web.contrib.template import render_cheetah
+
+render = render_cheetah('templates/')        
 
 urls = (
     '/', 'index', 
     '/images/(.*)', 'images', 
     '/liked/(.*)', 'liked', 
-    '/hated/(.*)', 'hated'
+    '/hated/(.*)', 'hated',
+    '/notification/', 'notification'
 )
 
 app = web.application(urls, globals())
@@ -20,17 +23,27 @@ app = web.application(urls, globals())
 class liked:
     def POST(self, id):
     	userip = web.ctx.ip	
-	# user hat fuer einen song gestimmt
-	success = createSearchTree.handleVote(id, True, userip )	
-        raise web.seeother('/')
+        # user hat fuer einen song gestimmt
+        success = createSearchTree.handleVote(id, True, userip )	
+        if success:
+            raise web.seeother('/')
+        else:
+	        raise web.seeother('/notification/')
 				
 class hated:
     def POST(self, id):
         userip = web.ctx.ip
-    	# user hat gegen einen song gestimmt
-	success = createSearchTree.handleVote(id, False, userip )	
-        raise web.seeother('/')
-	    		
+        # user hat gegen einen song gestimmt
+        success = createSearchTree.handleVote(id, False, userip )
+        if success:
+            raise web.seeother('/')
+        else:
+	        raise web.seeother('/notification/')
+
+class notification:
+    def GET(self):
+        return render.notification()
+
 # index page
 class index:        
     def GET(self):

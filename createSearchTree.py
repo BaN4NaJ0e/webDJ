@@ -55,9 +55,9 @@ def handleVote(trackid, like, ip):
 
 		# put userip/trackid/timestamp in votedb	
 		votedb.insertVote(trackid, ip)
-		return song
+		return True
 	else: 
-		return "## user already voted for this song"
+		return False
 
 def buildHTML():
 	# get now playing track info
