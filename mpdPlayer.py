@@ -70,7 +70,7 @@ def addSongs():
 		retcode = subprocess.call(['mpc','-q','crop'])
 	for currentSongPath in currentTopSongs:
 		# make currentsongpath relative to music folder
-		mpdSongPath = currentSongPath[0].lstrip(settings.musicfolder)
+		mpdSongPath = currentSongPath[0][len(settings.musicfolder)+1:len(currentSongPath[0])]
 		retcode = subprocess.call(['mpc','-q','add',mpdSongPath])
 	currentTopSongs = []
 
