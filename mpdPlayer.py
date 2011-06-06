@@ -67,7 +67,9 @@ def manager():
 def addSongs():
 	global currentTopSongs		
 	# remove previous top hit in playlist, but keep playing current song
-	if len(subprocess.Popen(['mpc','playlist'], stdout=subprocess.PIPE).communicate()[0]) > 0:
+	if subprocess.Popen(['mpc','playlist'], stdout=subprocess.PIPE).communicate()[0].count('\n') == 1 and isNotPlaying():
+		retcode = subprocess.call(['mpc','-q','clear'])
+	if subprocess.Popen(['mpc','playlist'], stdout=subprocess.PIPE).communicate()[0].count('\n') > 1:
 		retcode = subprocess.call(['mpc','-q','crop'])
 	for currentSongPath in currentTopSongs:
 		# make currentsongpath relative to music folder
