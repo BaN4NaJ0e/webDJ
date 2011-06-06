@@ -78,6 +78,7 @@ class images:
         if name in os.listdir('images'):  # Security
             web.header("Content-Type", cType[ext]) # Set the Header
             web.header("Cache-Control", "public")
+            web.header("Expires", "Sun, 17 Jan 2038 19:14:07 GMT")
             return open('images/%s'%name,"rb").read() # Notice 'rb' for reading images
         else:
             raise web.notfound()
