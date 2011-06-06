@@ -43,14 +43,6 @@ class Historyitem:
 		self.albumart = albumart
 		self.lastplayed = lastplayed
 
-# input: time in seconds
-# output: human readable timestring
-def GetInHMS(seconds):
-    hours = seconds / 3600
-    seconds -= 3600*hours
-    minutes = seconds / 60
-    seconds -= 60*minutes
-    return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 def handleVote(trackid, like, ip):
 	# check if user has enough votes left
@@ -150,7 +142,8 @@ def buildHTML():
 	historyList = []
 	for i in historyTuple:
 		# calculate time between now and moment song was played
-		timeDelta = GetInHMS( int( time.time()-float(i[4]) ) )
+		timeDelta =  int( time.time()-float(i[4]) )
+		timeDelta = timeDelta / 60
 		#  artist, songtitle, album, albumart, lastplayed
 		myHistoryItem = Historyitem(i[0],i[1], i[2], i[3], timeDelta)
 		historyList.append(myHistoryItem)
