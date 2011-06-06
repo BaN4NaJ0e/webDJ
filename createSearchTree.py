@@ -123,7 +123,8 @@ def buildHTML():
 			resultTupel = cursor.fetchall()
 			
 			# get all tracks for each album
-			cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=?;""", t )
+			alb = (album[0],artist[0])
+			cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=? AND artist=?;""", alb )
 			albumtracksTuple = cursor.fetchall()
 			tracks = []
 			#pprint.pprint( albumtracksTuple )
