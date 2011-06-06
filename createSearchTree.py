@@ -69,6 +69,39 @@ def handleVote(trackid, like, ip):
 	else: 
 		return False
 
+# build playlist history html
+def buildHistory():
+	# open sqlite db connection
+	connection = sqlite3.connect("mucke.db")
+	cursor = connection.cursor()
+	
+	cursor.execute("""SELECT artist, title, album, albumart, lastplayed FROM musiclib WHERE lastplayed > '0' ORDER BY lastplayed DESC LIMIT 10;""")
+	historyTuple = cursor.fetchall()
+	
+	historyList = []
+	
+	for i in historyTuple:
+		# calculate time between now and moment song was played
+		timeDelta =  int( time.time()-float(i[4]) )
+		timeDelta = timeDelta / 60
+		#  artist, songtitle, album, albumart, lastplayed
+		myHistoryItem = Historyitem(i[0],i[1], i[2], i[3], timeDelta)
+		historyList.append(myHistoryItem)
+	
+	# remove item that is playing now from list
+	if len(historyList) > 1: 
+		historyList.pop(0)
+	
+	# close db connection
+	connection.close()
+	
+	nameSpace = {'history': historyList }
+	t= Template(file="templates/history.html", searchList=[nameSpace])
+	
+	print "## updated history.html"
+	return t
+
+
 def buildHTML():
 	# get now playing track info from mpd
 	nowPlayingTuple = mpdPlayer.nowPlaying()
@@ -132,30 +165,11 @@ def buildHTML():
 			
 		# add all informations to tree
 		requestSongTree.append([artist[0], alben])
-		
-	####################
-	# HISTORY TREE
-	####################
-	cursor.execute("""SELECT artist, title, album, albumart, lastplayed FROM musiclib WHERE lastplayed > '0' ORDER BY lastplayed DESC LIMIT 10;""")
-	historyTuple = cursor.fetchall()
-	
-	historyList = []
-	for i in historyTuple:
-		# calculate time between now and moment song was played
-		timeDelta =  int( time.time()-float(i[4]) )
-		timeDelta = timeDelta / 60
-		#  artist, songtitle, album, albumart, lastplayed
-		myHistoryItem = Historyitem(i[0],i[1], i[2], i[3], timeDelta)
-		historyList.append(myHistoryItem)
-	
-	# remove item that is playing now from list
-	if len(historyList) > 1: 
-		historyList.pop(0)
 	
 	# close db connection
 	connection.close()
 	
-	nameSpace = {'charts': chartList, 'artists': requestSongTree, 'current': currentTrack , 'history': historyList }
+	nameSpace = {'charts': chartList, 'artists': requestSongTree, 'current': currentTrack }
 	t= Template(file="templates/index.html", searchList=[nameSpace])
 	
 	print "## updated index.html"

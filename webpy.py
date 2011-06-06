@@ -14,7 +14,8 @@ urls = (
     '/images/(.*)', 'images', 
     '/liked/(.*)', 'liked', 
     '/hated/(.*)', 'hated',
-    '/notification/', 'notification'
+    '/notification/', 'notification',
+    '/history/', 'history'
 )
 
 app = web.application(urls, globals())
@@ -44,12 +45,18 @@ class notification:
     def GET(self):
         return render.notification()
 
+# history page
+class history:        
+    def GET(self):
+        historyHtml = createSearchTree.buildHistory()
+        return historyHtml
+
 # index page
 class index:        
     def GET(self):
         indexHtml = createSearchTree.buildHTML()
         return indexHtml
-		    
+
 # handling images in website (albumart,..)
 class images:
     def GET(self,name):

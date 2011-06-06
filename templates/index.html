@@ -105,17 +105,8 @@
 			</li>
 			</ul>
 	
-	<li data-theme="a">playlist history
-		<ol data-role="listview" data-theme="c">
-				#for $item in $history
-				  <li>
-					<img src="$item.albumart" alt="albumart" class="ui-li-thumb">
-					<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.songtitle</i> </h2>
-					<p> $item.album </p>
-					<span class="ui-li-aside"> <p>last played:<br>$item.lastplayed<br>minute(s) ago</p> </span>
-				  </li>
-				#end for
-			</ol>
+	<li data-theme="a">
+		<a href="/history/" rel="external" class="ui-link-inherit">playlist history</a>
 	</li>
 
 

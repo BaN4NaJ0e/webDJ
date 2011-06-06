@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<title>vote your song!</title>
+	 <meta charset="utf-8">
+	<link rel="stylesheet" href="/static/jquery.mobile-1.0a4.1.css" />
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="/static/jquery.mobile-1.0a4.1-fix.js"></script>
+
+</head>
+<body class="index">
+
+<div data-role="page" id="home" >
+
+	<div data-role="header">
+	<a href="/" rel="external" data-icon="back">back</a>
+	<h2>playlist history</h2>
+	</div><!-- /header -->
+
+<div data-role="content">
+	<ol data-role="listview" data-theme="c">
+			#for $item in $history
+			  <li>
+				<img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
+				<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.songtitle</i> </h2>
+				<p> $item.album </p>
+				<span class="ui-li-aside"> <p>last played:<br> <b>$item.lastplayed</b><br>minute(s) ago</p> </span>
+			  </li>
+			#end for
+		</ol>
+
+ </div><!-- /content -->
+
+ <div data-role="footer" data-theme="d">
+ <h4> &copy 2011 </h4>
+ </div><!-- /footer -->
+
+</div><!-- /page -->
+
+</body>
+
+</html>
