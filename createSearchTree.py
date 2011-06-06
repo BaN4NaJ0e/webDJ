@@ -69,6 +69,60 @@ def handleVote(trackid, like, ip):
 	else: 
 		return False
 
+# build request song html
+def buildRequest():
+	# open sqlite db connection
+	connection = sqlite3.connect("mucke.db")
+	cursor = connection.cursor()
+	
+	# abfragen aller artists ohne doppelte eintraege
+	cursor.execute("""SELECT DISTINCT artist FROM musiclib;""")
+	artists = cursor.fetchall()
+	
+	requestSongTree = []
+	
+	# get all album names for every single artist
+	for artist in artists:
+		t = (artist[0],)
+		# frage von jedem künstler alle alben ab
+		cursor.execute("""SELECT DISTINCT album FROM musiclib WHERE artist=?;""", t )
+		albenTuple = cursor.fetchall()
+		alben = []
+		for album in albenTuple:
+			t = (album[0],)
+			# get path to albumart folder.jpg and release year
+			cursor.execute("""SELECT DISTINCT albumart, year FROM musiclib WHERE album=?;""", t )
+			resultTupel = cursor.fetchall()
+			
+			# get all tracks for each album
+			alb = (album[0],artist[0])
+			cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=? AND artist=?;""", alb )
+			albumtracksTuple = cursor.fetchall()
+			tracks = []
+			#pprint.pprint( albumtracksTuple )
+			for track in albumtracksTuple:
+				#				title , 	id , 		votes, 	tracklength
+				myTrack = Track( track[0], track[1] , track[2], track[3])
+				tracks.append(myTrack)
+			
+			#						name					coverpath				year				all tracks
+			myAlbum = Album(album[0].encode('latin-1'), str(resultTupel[0][0]), str(resultTupel[0][1]), tracks )
+			alben.append(myAlbum)
+			
+			
+		# add all informations to tree
+		requestSongTree.append([artist[0], alben])
+		
+	# close db connection
+	connection.close()
+	
+	nameSpace = {'artists': requestSongTree}
+	t= Template(file="templates/request.html", searchList=[nameSpace])
+	
+	print "## updated index.html"
+	return t
+
+
 # build playlist history html
 def buildHistory():
 	# open sqlite db connection
@@ -125,51 +179,10 @@ def buildHTML():
 		myChartItem = Chartitem(i[0],i[1], i[2], i[3], i[4])
 		chartList.append(myChartItem)
 	
-	####################
-	# REQUEST SONG TREE
-	####################
-	# abfragen aller artists ohne doppelte eintraege
-	cursor.execute("""SELECT DISTINCT artist FROM musiclib;""")
-	artists = cursor.fetchall()
-	
-	requestSongTree = []
-	
-	# get all album names for every single artist
-	for artist in artists:
-		t = (artist[0],)
-		# frage von jedem künstler alle alben ab
-		cursor.execute("""SELECT DISTINCT album FROM musiclib WHERE artist=?;""", t )
-		albenTuple = cursor.fetchall()
-		alben = []
-		for album in albenTuple:
-			t = (album[0],)
-			# get path to albumart folder.jpg and release year
-			cursor.execute("""SELECT DISTINCT albumart, year FROM musiclib WHERE album=?;""", t )
-			resultTupel = cursor.fetchall()
-			
-			# get all tracks for each album
-			alb = (album[0],artist[0])
-			cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=? AND artist=?;""", alb )
-			albumtracksTuple = cursor.fetchall()
-			tracks = []
-			#pprint.pprint( albumtracksTuple )
-			for track in albumtracksTuple:
-				#				title , 	id , 		votes, 	tracklength
-				myTrack = Track( track[0], track[1] , track[2], track[3])
-				tracks.append(myTrack)
-			
-			#						name					coverpath				year				all tracks
-			myAlbum = Album(album[0].encode('latin-1'), str(resultTupel[0][0]), str(resultTupel[0][1]), tracks )
-			alben.append(myAlbum)
-			
-			
-		# add all informations to tree
-		requestSongTree.append([artist[0], alben])
-	
 	# close db connection
 	connection.close()
 	
-	nameSpace = {'charts': chartList, 'artists': requestSongTree, 'current': currentTrack }
+	nameSpace = {'charts': chartList, 'current': currentTrack }
 	t= Template(file="templates/index.html", searchList=[nameSpace])
 	
 	print "## updated index.html"

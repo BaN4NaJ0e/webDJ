@@ -54,56 +54,9 @@
 			</ol>
 		</li>
 
-	<li data-theme="b">request song
-		<ul data-role="listview" data-theme="d" data-filter="true">
-		
-		<li data-role="list-divider">choose artist</li>
-
-				#for $artist in $artists
-				<li> $artist[0] 
-				<ul data-role="listview" data-theme="c">
-					<li data-role="list-divider">choose album</li>	
-					#for $album in $artist[1]			
-							<li>
-							<img src="$album.coverpath" alt="albumart" class="ui-li-thumb">
-							<h3 class="ui-li-heading">$album.name</h3>
-							<p class="ui-li-desc">$album.year</p>
-								<ul data-role="listview" data-theme="c">
-								<li data-role="list-divider">choose song</li>
-								#for $track in $album.tracks
-								<li> 
-									<h2 class="ui-li-heading"> $track.name </h2>
-									<span class="ui-li-count">$track.votes</span>
-									<ul data-role="listview" data-theme="c">
-									<li>
-									<img src="$album.coverpath" alt="albumart" class="ui-li-thumb">
-									<h3 class="ui-li-heading">$artist[0] <br><i>$track.name</i>  </h3>
-									<p class="ui-li-desc">$album.name ($album.year)</p>
-									<span class="ui-li-count">$track.votes</span>
-									</li>
-							
-									<div data-role="controlgroup" >
-									<form action="/liked/$track.id" method="post" data-ajax="false">
-										<input type="submit" value="like" data-role="button" data-icon="plus" data-theme="f" />
-									</form>
-									<form action="/hated/$track.id" method="post" data-ajax="false">
-										<input type="submit" value="hate" data-role="button" data-icon="minus" data-theme="g" />
-									</form>
-									<a href="/" rel="external" data-role="button" data-icon="delete">Cancel</a>
-										
-									</div>
-							
-									</ul>
-								</li>
-								#end for
-								</ul>
-						</li>
-					#end for
-				</ul>				
-				</li>
-			#end for
-			</li>
-			</ul>
+	<li data-theme="b">
+		<a href="/request/" rel="external" class="ui-link-inherit">request a song</a
+	</li>
 	
 	<li data-theme="a">
 		<a href="/history/" rel="external" class="ui-link-inherit">playlist history</a>

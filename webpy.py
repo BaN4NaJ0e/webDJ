@@ -15,6 +15,7 @@ urls = (
     '/liked/(.*)', 'liked', 
     '/hated/(.*)', 'hated',
     '/notification/', 'notification',
+    '/request/', 'request',
     '/history/', 'history'
 )
 
@@ -56,6 +57,12 @@ class index:
     def GET(self):
         indexHtml = createSearchTree.buildHTML()
         return indexHtml
+
+# request song page
+class request:        
+    def GET(self):
+        requestHtml = createSearchTree.buildRequest()
+        return requestHtml
 
 # handling images in website (albumart,..)
 class images:
