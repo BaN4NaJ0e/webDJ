@@ -155,7 +155,7 @@ def buildHTML():
 		myHistoryItem = Historyitem(i[0],i[1], i[2], i[3], timeDelta)
 		historyList.append(myHistoryItem)
 	
-	# remove item that is playing now
+	# remove item that is playing now from list
 	if len(historyList) > 1: 
 		historyList.pop(0)
 	
