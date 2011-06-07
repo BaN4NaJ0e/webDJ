@@ -6,6 +6,7 @@ import settings
 
 
 currentTopSongs = []
+oldCurrentTopSongs = []
 
 def isNotPlaying():
 	output = subprocess.Popen(['mpc'], stdout=subprocess.PIPE).communicate()[0]
@@ -59,22 +60,26 @@ def manager():
 			# just for debugging
 			#print nowPlaying()
 			# don't let the script eat up all system ressources
-			time.sleep(3)	
+			time.sleep(5)	
 		else:
 			print "top 10 is empty! waiting for incoming votes"
-			time.sleep(5)
+			time.sleep(10)
 
 def addSongs():
-	global currentTopSongs		
+	global currentTopSongs	
+	global oldCurrentTopSongs	
 	# remove previous top hit in playlist, but keep playing current song
 	if subprocess.Popen(['mpc','playlist'], stdout=subprocess.PIPE).communicate()[0].count('\n') >= 1 and isNotPlaying():
 		retcode = subprocess.call(['mpc','-q','clear'])
-	if subprocess.Popen(['mpc','playlist'], stdout=subprocess.PIPE).communicate()[0].count('\n') > 1:
-		retcode = subprocess.call(['mpc','-q','crop'])
-	for currentSongPath in currentTopSongs:
-		# make currentsongpath relative to music folder
-		mpdSongPath = currentSongPath[0][len(settings.musicfolder)+1:len(currentSongPath[0])]
-		retcode = subprocess.call(['mpc','-q','add',mpdSongPath])
+	if currentTopSongs != oldCurrentTopSongs:
+		print "## updating playlist"	
+		if subprocess.Popen(['mpc','playlist'], stdout=subprocess.PIPE).communicate()[0].count('\n') > 1:
+			retcode = subprocess.call(['mpc','-q','crop'])
+		for currentSongPath in currentTopSongs:
+			# make currentsongpath relative to music folder
+			mpdSongPath = currentSongPath[0][len(settings.musicfolder)+1:len(currentSongPath[0])]
+			retcode = subprocess.call(['mpc','-q','add',mpdSongPath])
+	oldCurrentTopSongs = currentTopSongs
 	currentTopSongs = []
 
 def startPlaylist():
