@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<title>vote your song!</title>
+	 <meta charset="utf-8">
+	<link rel="stylesheet" href="/static/jquery.mobile-1.0a4.1.compressed.css" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="/static/jquery.mobile-1.0a4.1-fix.compressed.js"></script>
+
+</head>
+<body class="index">
+
+<div data-role="page" id="home" >
+
+	<div data-role="header" data-theme="b">
+	<a href="/artists/" rel="external" data-icon="back">back</a>
+	<h2>$artist</h2>
+	</div><!-- /header -->
+
+<div data-role="content">
+
+<ul data-role="listview" data-theme="d">
+
+	<li data-role="list-divider">choose album</li>	
+	#for $album in $alben
+			<li>
+			<img src="../$album.coverpath" alt="albumart" class="ui-li-thumb" >
+			<h3 class="ui-li-heading">$album.name</h3>
+			<p class="ui-li-desc">$album.year</p>
+				<ul data-role="listview" data-theme="c">
+					<li data-role="list-divider">choose song</li>
+					#for $track in $album.tracks
+					<li> 
+						<h2 class="ui-li-heading"> $track.name </h2>
+						<span class="ui-li-count">$track.votes</span>
+						<ul data-role="listview" data-theme="c">
+							<li>
+							<img src="../$album.coverpath" alt="albumart" class="ui-li-thumb" >
+							<h3 class="ui-li-heading">$artist <br><i>$track.name</i>  </h3>
+							<p class="ui-li-desc">$album.name ($album.year)</p>
+							<span class="ui-li-count">$track.votes</span>
+							</li>
+			
+							<div data-role="controlgroup" >
+							<form action="/liked/$track.id" method="post" data-ajax="false">
+								<input type="submit" value="like" data-role="button" data-icon="plus" data-theme="f" />
+							</form>
+							<form action="/hated/$track.id" method="post" data-ajax="false">
+								<input type="submit" value="hate" data-role="button" data-icon="minus" data-theme="g" />
+							</form>
+							<a href="/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+							</div>
+						</ul>
+					</li>
+					#end for
+				</ul>
+			</li>
+	#end for
+
+</ul>
+	
+ </div><!-- /content -->
+
+ <div data-role="footer" data-theme="d">
+ <h4> &copy 2011 </h4>
+ </div><!-- /footer -->
+
+</div><!-- /page -->
+
+</body>
+
+</html>

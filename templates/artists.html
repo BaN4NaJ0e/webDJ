@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<title>vote your song!</title>
+	 <meta charset="utf-8">
+	<link rel="stylesheet" href="/static/jquery.mobile-1.0a4.1.compressed.css" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="/static/jquery.mobile-1.0a4.1-fix.compressed.js"></script>
+
+</head>
+<body class="index">
+
+<div data-role="page" id="home" >
+
+	<div data-role="header" data-theme="b">
+	<a href="/" rel="external" data-icon="back">back</a>
+	<h2>request a song</h2>
+	</div><!-- /header -->
+
+<div data-role="content">
+
+<ul data-role="listview" data-theme="d" data-filter="true">
+		#for $artist in $artists
+		<li> <a href="/artists/?artist=$artist" rel="external" class="ui-link-inherit">$artist</a </li>
+		#end for
+</ul>
+	
+ </div><!-- /content -->
+
+ <div data-role="footer" data-theme="d">
+ <h4> &copy 2011 </h4>
+ </div><!-- /footer -->
+
+</div><!-- /page -->
+
+</body>
+
+</html>
