@@ -28,12 +28,14 @@ class Chartitem:
 		self.albumart = albumart
 		self.id = trackid
 
+# now playing track info
 class SingleTrack():
-	def __init__(self, artist, title, album, albumart):
+	def __init__(self, artist, title, album, albumart, runtime):
 		self.artist = artist
 		self.title = title
 		self.album = album
 		self.albumart = albumart
+		self.runtime = runtime
 		
 class Historyitem:
 	def __init__(self, artist, songtitle, album, albumart, lastplayed):
@@ -136,63 +138,6 @@ def buildAlben(artistname):
 	print "## created songtree for: "+ artistname
 	return t
 
-##############################
-# alte methode die gesamten baum abfragt! laaangsaaam
-##############################
-
-# build request song html
-def buildRequest():
-	# open sqlite db connection
-	connection = sqlite3.connect("mucke.db")
-	cursor = connection.cursor()
-	
-	# abfragen aller artists ohne doppelte eintraege
-	cursor.execute("""SELECT DISTINCT artist FROM musiclib;""")
-	artists = cursor.fetchall()
-	
-	requestSongTree = []
-	
-	# get all album names for every single artist
-	for artist in artists:
-		t = (artist[0],)
-		# frage von jedem künstler alle alben ab
-		cursor.execute("""SELECT DISTINCT album FROM musiclib WHERE artist=?;""", t )
-		albenTuple = cursor.fetchall()
-		alben = []
-		for album in albenTuple:
-			t = (album[0],)
-			# get path to albumart folder.jpg and release year
-			cursor.execute("""SELECT DISTINCT albumart, year FROM musiclib WHERE album=?;""", t )
-			resultTupel = cursor.fetchall()
-			
-			# get all tracks for each album
-			alb = (album[0],artist[0])
-			cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=? AND artist=?;""", alb )
-			albumtracksTuple = cursor.fetchall()
-			tracks = []
-			#pprint.pprint( albumtracksTuple )
-			for track in albumtracksTuple:
-				#				title , 	id , 		votes, 	tracklength
-				myTrack = Track( track[0], track[1] , track[2], track[3])
-				tracks.append(myTrack)
-			
-			#						name					coverpath				year				all tracks
-			myAlbum = Album(album[0].encode('latin-1'), str(resultTupel[0][0]), str(resultTupel[0][1]), tracks )
-			alben.append(myAlbum)
-			
-			
-		# add all informations to tree
-		requestSongTree.append([artist[0], alben])
-		
-	# close db connection
-	connection.close()
-	
-	nameSpace = {'artists': requestSongTree}
-	t= Template(file="templates/request.html", searchList=[nameSpace])
-	
-	print "## updated index.html"
-	return t
-
 
 # build playlist history html
 def buildHistory():
@@ -236,9 +181,17 @@ def buildIndex():
 	##############################
 	nowPlayingTuple = mpdPlayer.nowPlaying()
 	if len(nowPlayingTuple) > 0:
-		currentTrack = SingleTrack(nowPlayingTuple[0][0],nowPlayingTuple[0][1],nowPlayingTuple[0][2],nowPlayingTuple[0][3])
+		# runtime conversion from seconds to min:sec
+		minutes = int(nowPlayingTuple[0][4]) / 60
+		seconds = int(nowPlayingTuple[0][4]) % 60
+		if seconds < 9:
+			runtime = str(minutes) + ":0" + str(seconds)
+		else:
+			runtime = str(minutes) + ":" + str(seconds)
+			
+		currentTrack = SingleTrack(nowPlayingTuple[0][0],nowPlayingTuple[0][1],nowPlayingTuple[0][2],nowPlayingTuple[0][3], runtime)
 	else:
-		currentTrack = SingleTrack('Artist','Title','Album','images/no-album.png')
+		currentTrack = SingleTrack('Artist','Title','Album','images/no-album.png', "0:00")
 	
 	# open sqlite db connection
 	connection = sqlite3.connect("mucke.db")

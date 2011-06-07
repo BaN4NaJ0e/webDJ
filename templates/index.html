@@ -2,7 +2,7 @@
   <head>
 	<title>vote your song!</title>
 	 <meta charset="utf-8">
-	<link rel="stylesheet" href="/static/jquery.mobile-1.0a4.1.compressed.css" />
+	<link rel="stylesheet" href="/static/jquery.mobile-1.0a4.1.css" />
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript" src="/static/jquery.mobile-1.0a4.1-fix.compressed.js"></script>
@@ -18,11 +18,13 @@
 
 <div data-role="content">
 	<ul data-role="listview" data-theme="c"> 
-		<li data-theme="e">Now Playing:
-				<img src="$current.albumart" alt="AlbumArt"> 
-				<h3 class="ui-li-heading">$current.title</h3>
-				<p class="ui-li-heading"> <b>$current.artist</b> </p> 
-				<p class="ui-li-heading">$current.album</p>
+		<li data-role="list-divider">Now Playing:</li>
+		<li data-theme="e">
+			<img src="$current.albumart" alt="AlbumArt"> 
+			<h3 class="ui-li-heading">$current.title</h3>
+			<p class="ui-li-heading"> <b>$current.artist</b> </p> 
+			<p class="ui-li-heading">$current.album</p>
+			<p class="ui-li-count" align="center" >time:<br>$current.runtime</p>
 		</li>
 
 		<li data-theme="e">Top 10 Songs
@@ -53,13 +55,9 @@
 				#end for
 			</ol>
 		</li>
-
-	<li data-theme="b">
-		<a href="/request/" rel="external" class="ui-link-inherit">request a song</a
-	</li>
 	
 	<li data-theme="b">
-		<a href="/artists/" rel="external" class="ui-link-inherit">request a song (faster)</a
+		<a href="/artists/" rel="external" class="ui-link-inherit">request a song</a
 	</li>
 	
 	<li data-theme="a">
