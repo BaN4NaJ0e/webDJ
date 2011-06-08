@@ -170,14 +170,13 @@ def buildHistory():
 	
 	for i in historyTuple:
 		# calculate time between now and moment song was played
-		timeDelta =  int( time.time()-float(i[4]) )
-		timeDelta = timeDelta / 60
+		timeDelta =  int( round((time.time()-float(i[4]))/60) )
 		#  artist, songtitle, album, albumart, lastplayed
 		myHistoryItem = Historyitem(i[0],i[1], i[2], i[3], timeDelta)
 		historyList.append(myHistoryItem)
 	
 	# remove item that is playing now from list
-	if len(historyList) > 1: 
+	if len(historyList) > 1 and not mpdPlayer.isNotPlaying(): 
 		historyList.pop(0)
 	
 	# close db connection

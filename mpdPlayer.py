@@ -29,26 +29,25 @@ def nowPlaying():
 
 # reset votes to zero and write to db which time this track was played
 def resetVotes():
-	connection = sqlite3.connect("mucke.db")
-	cursor = connection.cursor()
-	currentfile = subprocess.Popen(['mpc','-f','"%file%"','current'], stdout=subprocess.PIPE).communicate()[0].replace('"','').rstrip()
-	# execute can't handle simple strings for substitution so lets put it in a tuple
-	currentpath = [settings.musicfolder + "/" + currentfile]
-	# reset votes for current song
-	cursor.execute("""UPDATE musiclib SET votes= 0 WHERE path==?;""",currentpath)
-	# set current time to last time played column
-	currenttime = [time.time() , settings.musicfolder + "/" + currentfile]
-	cursor.execute("""UPDATE musiclib SET lastplayed= ? WHERE path==?;""",currenttime)
-	
-	cursor.execute("""SELECT id FROM musiclib WHERE path==?;""",currentpath)
-	idTuple = cursor.fetchall()
-	if len(idTuple) > 0 :
-		trackid = idTuple[0]
-		#reset ip/trackid counter
-		votedb.resetVotes(trackid)
-	
-	connection.commit()
-	connection.close()
+	if not isNotPlaying():
+		connection = sqlite3.connect("mucke.db")
+		cursor = connection.cursor()
+		currentfile = subprocess.Popen(['mpc','-f','"%file%"','current'], stdout=subprocess.PIPE).communicate()[0].replace('"','').rstrip()
+		# execute can't handle simple strings for substitution so lets put it in a tuple
+		currentpath = [settings.musicfolder + "/" + currentfile]
+		cursor.execute("""SELECT id FROM musiclib WHERE path==?;""",currentpath)
+		idTuple = cursor.fetchall()
+		if len(idTuple) == 1 :
+			trackid = idTuple[0]
+			#reset ip/trackid counter
+			votedb.resetVotes(trackid)	
+			# reset votes for current song
+			cursor.execute("""UPDATE musiclib SET votes= 0 WHERE id==?;""",(trackid))
+			# set current time to last time played column
+			currenttime = [time.time() , trackid[0]]
+			cursor.execute("""UPDATE musiclib SET lastplayed= ? WHERE id==?;""",currenttime)
+			connection.commit()
+		connection.close()
 
 
 def initMPD():
