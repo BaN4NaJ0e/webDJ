@@ -11,6 +11,7 @@ import settings
 
 render = render_cheetah('templates/')
 
+
 urls = (
 	'/', 'index', 
 	'/images/(.*)', 'images', 
@@ -20,10 +21,27 @@ urls = (
 	'/voted/', 'voted',
 	'/request/', 'request',
 	'/artists/', 'artists',
+	'/login', 'login',
+	'/reset', 'reset',
 	'/history/', 'history'
 )
 
 app = web.application(urls, globals())
+
+class login:
+
+	def GET(self):
+		return render.login()
+		
+	def POST(self):
+		    passwd = web.input().passwd
+		    try:
+		        if passwd == settings.pw :
+		            return render.admin()
+		        else:
+		            return  render.login_error()
+		    except:
+		        return  render.login_error()
 
 # html page for votes
 class liked:
