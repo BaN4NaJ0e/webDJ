@@ -40,13 +40,25 @@ def checkQuota(trackid, ip):
 	# check if user voted for this song in the past
 	cursor.execute("""SELECT timestamp FROM votedb WHERE trackid=? AND userip=?;""", t )
 	pathTuple = cursor.fetchall()
-	print "amount of votes: " +str( len(pathTuple) )
 	if len(pathTuple) > 0 :
 	# user already voted for this song
 		return False
 	else:
 	# first vote for this song by user
 		return True
+
+# after song was played, trackid/ip will be deleted so user can vote it again
+def resetVotes(trackid):
+	connection = sqlite3.connect("uservotedb.db")
+	cursor = connection.cursor()
+	
+	t = (trackid)
+	cursor.execute("""DELETE FROM votedb WHERE trackid=? ;""", t )
+	# commit delete
+	connection.commit()
+
+	#close db
+	connection.close()
 
 
 

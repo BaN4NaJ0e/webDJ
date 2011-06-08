@@ -5,6 +5,7 @@ import mpdPlayer
 from Cheetah.Template import Template
 import votedb
 import time
+import settings
 
 class Album:
 	def __init__(self, name, coverpath, year, tracks):
@@ -45,31 +46,45 @@ class Historyitem:
 		self.albumart = albumart
 		self.lastplayed = lastplayed
 
-# put incoming song vote from user into db
+# check and put incoming song vote from user into db
+# returncodes 
+# 0 = vote eingetrage
+# 1 = user hat schon für diesen song gestimmt
+# 2 = song ist noch für neue votes gesperrt, weil er erst gespielt wurde
 def handleVote(trackid, like, ip):
-	# check if user has already voted for this song
-	if votedb.checkQuota(trackid, ip):
+	# check if user with certain ip has already voted for this song
+	if votedb.checkQuota(trackid, ip) :
 		# open sqlite db connection
 		connection = sqlite3.connect("mucke.db")
 		cursor = connection.cursor()
 		t = (trackid,)
-		cursor.execute("""SELECT  artist,title,album,votes FROM musiclib WHERE id=?;""", t )
+		cursor.execute("""SELECT votes, lastplayed FROM musiclib WHERE id=?;""", t )
 		song = cursor.fetchall()
+		
+		# timeDela in minutes = current time - lastplayed time 
+		timeDelta = ( int( time.time() ) - int(song[0][1]) ) / 60
+		print "played minutes ago: " +str(timeDelta)
+		blockTime = settings.repeatTime - timeDelta
+		if timeDelta < settings.repeatTime :
+			# song was already played in the last xx minutes
+			return (2, blockTime)
+		
 		#de-/increase number of votes for song with certain id
 		if like:
 			cursor.execute("""UPDATE musiclib SET votes= votes + 1 WHERE id==?;""", t )
 		else:
 			# keine negative votezahl zulassen
-			if int(song[0][3]) > 0 :
+			if int(song[0][0]) > 0 :
 				cursor.execute("""UPDATE musiclib SET votes= votes - 1 WHERE id==?;""", t )
 		connection.commit()
 		connection.close()
 
 		# put userip/trackid/timestamp in votedb	
 		votedb.insertVote(trackid, ip)
-		return True
-	else: 
-		return False
+		return ( 0, 0 )
+	else:
+		# this user has already voted for this song
+		return (1, 1)
 
 # get html with all available artists
 def buildArtists():

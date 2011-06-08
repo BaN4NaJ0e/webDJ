@@ -6,6 +6,8 @@ import mpdPlayer
 import thread
 import votedb
 from web.contrib.template import render_cheetah
+from Cheetah.Template import Template
+import settings
 
 render = render_cheetah('templates/')
 
@@ -15,6 +17,7 @@ urls = (
 	'/liked/(.*)', 'liked', 
 	'/hated/(.*)', 'hated',
 	'/notification/', 'notification',
+	'/voted/', 'voted',
 	'/request/', 'request',
 	'/artists/', 'artists',
 	'/history/', 'history'
@@ -27,28 +30,48 @@ class liked:
 	def POST(self, id):
 		userip = web.ctx.ip	
 		# user hat fuer einen song gestimmt
-		success = createSearchTree.handleVote(id, True, userip )	
-		if success:
-			raise web.seeother('/')
-		else:
+		success , time= createSearchTree.handleVote(id, True, userip )
+		if success == 0:
+			# vote in db eingetragen
+			raise web.seeother('/voted/')
+		elif success == 1:
+			# user hat bereits fuer diesen song gestimmt
 			raise web.seeother('/notification/')
+		elif success == 2:
+			# song ist noch gesperrt
+			nameSpace = {'blockover': time, 'minutes': settings.repeatTime }
+			t= Template(file="templates/songblocked.html", searchList=[nameSpace])
+			return t
 				
 class hated:
 	def POST(self, id):
 		userip = web.ctx.ip
 		# user hat gegen einen song gestimmt
-		success = createSearchTree.handleVote(id, False, userip )
-		if success:
-			raise web.seeother('/')
-		else:
-			#user hat schon für den song gestimmt
+		success , time = createSearchTree.handleVote(id, False, userip )
+		if success == 0:
+			# vote in db eingetragen
+			raise web.seeother('/voted/')
+		elif success == 1:
+			# user hat bereits fuer diesen song gestimmt
 			raise web.seeother('/notification/')
+		elif success == 2:
+			# song ist noch gesperrt
+			nameSpace = {'blockover': time, 'minutes': settings.repeatTime }
+			t= Template(file="templates/songblocked.html", searchList=[nameSpace])
+			return t
+
+# user notification (vote was succesfull)
+class voted:
+	def GET(self):
+		return render.voted()
+		
 
 # user notification (you already voted for this song)
 class notification:
 	def GET(self):
 		return render.notification()
-
+		
+		
 # history page
 class history:		
 	def GET(self):
@@ -104,9 +127,5 @@ if __name__ == "__main__":
 	#make independant thread for musicplayer	
 	thread.start_new_thread(mpdPlayer.manager, ()) 
 	app.run()
-
-		
-
-
 
 

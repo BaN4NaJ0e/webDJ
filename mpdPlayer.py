@@ -3,6 +3,7 @@ import time
 import sqlite3
 import createSearchTree
 import settings
+import votedb
 
 
 currentTopSongs = []
@@ -39,8 +40,16 @@ def resetVotes():
 	currenttime = [time.time() , settings.musicfolder + "/" + currentfile]
 	cursor.execute("""UPDATE musiclib SET lastplayed= ? WHERE path==?;""",currenttime)
 	
+	cursor.execute("""SELECT id FROM musiclib WHERE path==?;""",currentpath)
+	idTuple = cursor.fetchall()
+	if len(idTuple) > 0 :
+		trackid = idTuple[0]
+		#reset ip/trackid counter
+		votedb.resetVotes(trackid)
+	
 	connection.commit()
 	connection.close()
+
 
 def initMPD():
 	retcode = subprocess.call(['mpc','-q','clear'])
