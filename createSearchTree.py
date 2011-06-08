@@ -57,12 +57,13 @@ def handleVote(trackid, like, ip):
 		# open sqlite db connection
 		connection = sqlite3.connect("mucke.db")
 		cursor = connection.cursor()
+		timestamp = time.time()
 		t = (trackid,)
 		cursor.execute("""SELECT votes, lastplayed FROM musiclib WHERE id=?;""", t )
 		song = cursor.fetchall()
 		
 		# timeDela in minutes = current time - lastplayed time 
-		timeDelta = ( int( time.time() ) - int(song[0][1]) ) / 60
+		timeDelta = ( int( timestamp ) - int(song[0][1]) ) / 60
 		print "played minutes ago: " +str(timeDelta)
 		blockTime = settings.repeatTime - timeDelta
 		if timeDelta < settings.repeatTime :
@@ -71,11 +72,11 @@ def handleVote(trackid, like, ip):
 		
 		#de-/increase number of votes for song with certain id
 		if like:
-			cursor.execute("""UPDATE musiclib SET votes= votes + 1 WHERE id==?;""", t )
+			cursor.execute("""UPDATE musiclib SET votes= votes + 1, votetime=? WHERE id==?;""", (timestamp,trackid) )
 		else:
 			# keine negative votezahl zulassen
 			if int(song[0][0]) > 0 :
-				cursor.execute("""UPDATE musiclib SET votes= votes - 1 WHERE id==?;""", t )
+				cursor.execute("""UPDATE musiclib SET votes= votes - 1, votetime=? WHERE id==?;""", (timestamp,trackid) )
 		connection.commit()
 		connection.close()
 
@@ -214,7 +215,7 @@ def buildIndex():
 	##############################
 	# get current top10 voted songs
 	##############################
-	cursor.execute("""SELECT artist, title, votes, albumart, id FROM musiclib WHERE votes > '0' ORDER BY votes DESC LIMIT 10;""")
+	cursor.execute("""SELECT artist, title, votes, albumart, id FROM musiclib WHERE votes > '0' ORDER BY votes DESC, votetime ASC LIMIT 10;""")
 	topvotesTuple = cursor.fetchall()
 	
 	chartList = []

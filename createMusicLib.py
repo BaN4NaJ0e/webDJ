@@ -40,7 +40,7 @@ cursor.execute("""DROP TABLE IF EXISTS musiclib """)
 # Pfad / Artist / Title / Album / Tracklaenge / Votes / LastTimePlayed in seconds
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS musiclib ( 
-    		id INTEGER, path TEXT, artist TEXT, title TEXT, album TEXT, albumart TEXT, year TEXT, tracklength INTEGER , votes INTEGER, lastplayed FLOAT)""")
+    		id INTEGER, path TEXT, artist TEXT, title TEXT, album TEXT, albumart TEXT, year TEXT, tracklength INTEGER , votes INTEGER, votetime FLOAT, lastplayed FLOAT)""")
 
 # add every musicfile with id3tag information to db
 id = 0
@@ -75,9 +75,10 @@ for file in fileList :
 		     tag.getYear(), 
 		     audioFile.getPlayTime(),
 		     0,
+             0,		
 		     0]	
 
-		sql = "INSERT INTO musiclib VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" 	
+		sql = "INSERT INTO musiclib VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" 	
 		cursor.execute(sql, fileinfos)
 		id=id+1
 	

@@ -8,6 +8,7 @@ import votedb
 
 currentTopSongs = []
 oldCurrentTopSongs = []
+lasttrackid = []
 
 def isNotPlaying():
 	output = subprocess.Popen(['mpc'], stdout=subprocess.PIPE).communicate()[0]
@@ -29,6 +30,7 @@ def nowPlaying():
 
 # reset votes to zero and write to db which time this track was played
 def resetVotes():
+	global lasttrackid
 	if not isNotPlaying():
 		connection = sqlite3.connect("mucke.db")
 		cursor = connection.cursor()
@@ -39,14 +41,17 @@ def resetVotes():
 		idTuple = cursor.fetchall()
 		if len(idTuple) == 1 :
 			trackid = idTuple[0]
-			#reset ip/trackid counter
-			votedb.resetVotes(trackid)	
-			# reset votes for current song
-			cursor.execute("""UPDATE musiclib SET votes= 0 WHERE id==?;""",(trackid))
-			# set current time to last time played column
-			currenttime = [time.time() , trackid[0]]
-			cursor.execute("""UPDATE musiclib SET lastplayed= ? WHERE id==?;""",currenttime)
-			connection.commit()
+			if trackid != lasttrackid:
+				print "## resetting votes"
+				#reset ip/trackid counter
+				votedb.resetVotes(trackid)	
+				# reset votes for current song
+				cursor.execute("""UPDATE musiclib SET votes= 0 WHERE id==?;""",(trackid))
+				# set current time to last time played column
+				currenttime = [time.time() , trackid[0]]
+				cursor.execute("""UPDATE musiclib SET lastplayed= ? WHERE id==?;""",currenttime)
+				connection.commit()
+				lasttrackid = trackid
 		connection.close()
 
 
@@ -102,7 +107,7 @@ def getTopVotedSongs():
 	cursor = connection.cursor()
 	
 	# get current top songs
-	cursor.execute("""SELECT path FROM musiclib WHERE votes > '0' ORDER BY votes DESC LIMIT 10;""")
+	cursor.execute("""SELECT path FROM musiclib WHERE votes > '0' ORDER BY votes DESC, votetime ASC LIMIT 10;""")
 	currentTopSongs = cursor.fetchall()
 
 	#print currentTopSongs	
