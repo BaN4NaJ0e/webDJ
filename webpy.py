@@ -34,19 +34,19 @@ class login:
 		return render.login()
 		
 	def POST(self):
-		    passwd = web.input().passwd
-		    try:
-		        if passwd == settings.pw :
-		            return render.admin()
-		        else:
-		            return  render.login_error()
-		    except:
-		        return  render.login_error()
+			passwd = web.input().passwd
+			try:
+				if passwd == settings.pw :
+					return render.admin()
+				else:
+					return	render.login_error()
+			except:
+				return	render.login_error()
 
 # html page for votes
 class liked:
 	def POST(self, id):
-		userip = web.ctx.ip	
+		userip = web.ctx.ip 
 		# user hat fuer einen song gestimmt
 		success , time= createSearchTree.handleVote(id, True, userip )
 		if success == 0:
