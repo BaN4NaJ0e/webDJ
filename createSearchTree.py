@@ -100,7 +100,7 @@ def buildArtists():
 	artists = []
 	
 	for artist in artistsTupel:
-		artists.append(artist[0])
+		artists.append(artist[0].encode('utf-8', 'replace'))
 	
 	# close db connection
 	connection.close()
@@ -138,11 +138,11 @@ def buildAlben(artistname):
 		#pprint.pprint( albumtracksTuple )
 		for track in albumtracksTuple:
 			#				title , 	id , 		votes, 	tracklength
-			myTrack = Track( track[0], track[1] , track[2], track[3])
+			myTrack = Track( track[0].encode('utf-8', 'replace'), track[1] , track[2], track[3])
 			tracks.append(myTrack)
 		
 		#						name					coverpath				year				all tracks
-		myAlbum = Album(album[0].encode('latin-1'), str(resultTupel[0][0]), str(resultTupel[0][1]), tracks )
+		myAlbum = Album(album[0].encode('utf-8', 'replace'), resultTupel[0][0], resultTupel[0][1], tracks )
 		alben.append(myAlbum)
 		
 	# close db connection
@@ -173,7 +173,7 @@ def buildHistory():
 		# calculate time between now and moment song was played
 		timeDelta =  int( round((time.time()-float(i[4]))/60) )
 		#  artist, songtitle, album, albumart, lastplayed
-		myHistoryItem = Historyitem(i[0],i[1], i[2], i[3], timeDelta)
+		myHistoryItem = Historyitem(i[0].encode('utf-8', 'replace'), i[1].encode('utf-8', 'replace'), i[2].encode('utf-8', 'replace'), i[3], timeDelta)
 		historyList.append(myHistoryItem)
 	
 	# remove item that is playing now from list
@@ -204,7 +204,11 @@ def buildIndex():
 		else:
 			runtime = str(minutes) + ":" + str(seconds)
 			
-		currentTrack = SingleTrack(nowPlayingTuple[0][0],nowPlayingTuple[0][1],nowPlayingTuple[0][2],nowPlayingTuple[0][3], runtime)
+		currentTrack =  SingleTrack(nowPlayingTuple[0][0].encode('utf-8', 'replace'),
+									nowPlayingTuple[0][1].encode('utf-8', 'replace'),
+									nowPlayingTuple[0][2].encode('utf-8', 'replace'),
+									nowPlayingTuple[0][3].encode('utf-8', 'replace'),
+									runtime)
 	else:
 		currentTrack = SingleTrack('Artist','Title','Album','images/no-album.png', "0:00")
 	
@@ -220,7 +224,11 @@ def buildIndex():
 	
 	chartList = []
 	for i in topvotesTuple:
-		myChartItem = Chartitem(i[0],i[1], i[2], i[3], i[4])
+		myChartItem = Chartitem(i[0].encode('utf-8', 'replace'),
+								i[1].encode('utf-8', 'replace'), 
+								i[2], 
+								i[3],
+								i[4])
 		chartList.append(myChartItem)
 	
 	# close db connection

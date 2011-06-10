@@ -25,10 +25,10 @@ image_extList = [".jpg", ".png", ".JPG",".PNG",]
 
 for root, subFolders, files in os.walk(rootdir):
 	for file in files:
-	if os.path.splitext(file)[1] in music_extList :
-		fileList.append(os.path.join(root,file))
-	elif os.path.splitext(file)[1] in image_extList and os.path.splitext(file)[0] == "folder" :
-		coverArtList.append(os.path.join(root,file))
+		if os.path.splitext(file)[1] in music_extList :
+			fileList.append(os.path.join(root,file))
+		elif os.path.splitext(file)[1] in image_extList and os.path.splitext(file)[0] == "folder" :
+			coverArtList.append(os.path.join(root,file))
 
 # open sqlite db connection
 connection = sqlite3.connect("mucke.db")
@@ -47,44 +47,56 @@ id = 0
 for file in fileList :
 
 	tag = eyeD3.Tag()
+	try:
 		tag.link(file)
-	if eyeD3.isMp3File(file):
-		audioFile = eyeD3.Mp3AudioFile(file)
+	
+		if eyeD3.isMp3File(file):
+			try:
+				audioFile = eyeD3.Mp3AudioFile(file)
+			except eyeD3.tag.InvalidAudioFormatException:
+				print "Fehlerhafte mp3: " + str(file)
 
-	albumartpath = ""
+		albumartpath = ""
 
-	# get album art path and copy all cover images to webserver folder
-	for coverpath in coverArtList :
-		if os.path.dirname(file) == os.path.split(coverpath)[0] :
-		    albumartpath = "images/"+tag.getArtist() +"_" +tag.getAlbum() +".jpg"			
-		    shutil.copy2(coverpath, albumartpath)
-		    break
+		# get album art path and copy all cover images to webserver folder
+		for coverpath in coverArtList :
+			if os.path.dirname(file) == os.path.split(coverpath)[0] :
+				albumartpath = "images/" +tag.getArtist() +"_" +tag.getAlbum() +".jpg"
+				try:
+					shutil.copy2(coverpath, albumartpath)
+					break
+				except IOError:
+					print "error copy folderart:\n"+ str(coverpath) +"to\n" +str(albumartpath)
+					
 
-	# put in placeholder image for tracks with no albumart found		
-	if albumartpath == "" :
-		albumartpath = "images/no-album.png"
+		# put in placeholder image for tracks with no albumart found		
+		if albumartpath == "" :
+			albumartpath = "images/no-album.png"
 
 	
-	try :
-		fileinfos = [id,
-			file.decode('utf-8'),
-			tag.getArtist(), 
-			tag.getTitle(),  
-			tag.getAlbum(),  
-			albumartpath,
-			tag.getYear(), 
-			audioFile.getPlayTime(),
-			0,
-			0,		
-			0] 
+		try :
+			fileinfos = [id,
+				file.decode('utf-8'),
+				tag.getArtist(), 
+				tag.getTitle(),  
+				tag.getAlbum(),  
+				albumartpath,
+				tag.getYear(), 
+				audioFile.getPlayTime(),
+				0,
+				0,
+				0] 
 
-		sql = "INSERT INTO musiclib VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"	
-		cursor.execute(sql, fileinfos)
-		id=id+1
+			sql = "INSERT INTO musiclib VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"	
+			cursor.execute(sql, fileinfos)
+			id=id+1
 	
-	except sqlite3.ProgrammingError:
-		print ( "fehler: " +unicode(tag.getArtist())+ unicode(tag.getTitle())+unicode(tag.getAlbum()) )
-
+		except sqlite3.ProgrammingError:
+			print ( "fehler: " +unicode(tag.getArtist())+ unicode(tag.getTitle())+unicode(tag.getAlbum()) )
+	
+	except eyeD3.tag.TagException:
+		print "Fehlerhafter id3 Tag: " + str(file)
+		
 # commit all new entries
 connection.commit()
 
