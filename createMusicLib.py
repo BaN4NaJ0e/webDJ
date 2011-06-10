@@ -1,5 +1,6 @@
 # coding: utf-8
 import os
+import re
 import sys
 import pprint
 import sqlite3
@@ -59,9 +60,10 @@ for file in fileList :
 		albumartpath = ""
 
 		# get album art path and copy all cover images to webserver folder
+		illegalChars = re.compile(r'[\/:*?"<>| ]+',re.U)
 		for coverpath in coverArtList :
 			if os.path.dirname(file) == os.path.split(coverpath)[0] :
-				albumartpath = "images/" +tag.getArtist() +"_" +tag.getAlbum() +".jpg"
+				albumartpath = "images/" + illegalChars.sub(' ',tag.getArtist()) +"_" + illegalChars.sub(' ',tag.getAlbum()) +".jpg"
 				try:
 					shutil.copy2(coverpath, albumartpath)
 					break
