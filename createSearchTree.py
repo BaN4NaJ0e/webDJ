@@ -7,6 +7,7 @@ import votedb
 import time
 import settings
 
+
 class Album:
 	def __init__(self, name, coverpath, year, tracks):
 		self.name = name
@@ -137,16 +138,30 @@ def buildAlben(artistname):
 		tracks = []
 		#pprint.pprint( albumtracksTuple )
 		for track in albumtracksTuple:
-			#				title , 	id , 		votes, 	tracklength
-			myTrack = Track( track[0].encode('utf-8', 'replace'), track[1] , track[2], track[3])
+			myTrack = Track( track[0].encode('utf-8', 'replace'),	# title
+							 track[1] ,								# track id
+							 track[2],								# votes
+							 track[3])								# tracklength
 			tracks.append(myTrack)
 		
-		#						name					coverpath				year				all tracks
-		myAlbum = Album(album[0].encode('utf-8', 'replace'), resultTupel[0][0], resultTupel[0][1], tracks )
+		releaseYear = resultTupel[0][1]
+		
+		# if no release year was found set it to palceholder
+		if releaseYear ==  None:
+			releaseYear = "-"
+		else :
+			releaseYear = resultTupel[0][1].encode('utf-8', 'replace')
+		
+		myAlbum = Album(album[0].encode('utf-8', 'replace'),			# album name
+						resultTupel[0][0].encode('utf-8', 'replace'),	# coverpath
+						releaseYear,									# album release year
+						tracks )										# all album tracks
 		alben.append(myAlbum)
 		
 	# close db connection
 	connection.close()
+	
+	artistname = artistname.encode('utf-8', 'replace')
 	
 	nameSpace = {'alben': alben, 'artist': artistname}
 	t= Template(file="templates/alben.html", searchList=[nameSpace])
@@ -172,8 +187,12 @@ def buildHistory():
 	for i in historyTuple:
 		# calculate time between now and moment song was played
 		timeDelta =  int( round((time.time()-float(i[4]))/60) )
-		#  artist, songtitle, album, albumart, lastplayed
-		myHistoryItem = Historyitem(i[0].encode('utf-8', 'replace'), i[1].encode('utf-8', 'replace'), i[2].encode('utf-8', 'replace'), i[3], timeDelta)
+		
+		myHistoryItem = Historyitem(i[0].encode('utf-8', 'replace'), #artist
+									i[1].encode('utf-8', 'replace'), #songtitle
+									i[2].encode('utf-8', 'replace'), #album
+									i[3].encode('utf-8', 'replace'), #albumart
+									timeDelta)						 #lastplayed
 		historyList.append(myHistoryItem)
 	
 	# remove item that is playing now from list
@@ -204,11 +223,11 @@ def buildIndex():
 		else:
 			runtime = str(minutes) + ":" + str(seconds)
 			
-		currentTrack =  SingleTrack(nowPlayingTuple[0][0].encode('utf-8', 'replace'),
-									nowPlayingTuple[0][1].encode('utf-8', 'replace'),
-									nowPlayingTuple[0][2].encode('utf-8', 'replace'),
-									nowPlayingTuple[0][3].encode('utf-8', 'replace'),
-									runtime)
+		currentTrack =  SingleTrack(nowPlayingTuple[0][0].encode('utf-8', 'replace'), #artist
+									nowPlayingTuple[0][1].encode('utf-8', 'replace'), #title
+									nowPlayingTuple[0][2].encode('utf-8', 'replace'), #album
+									nowPlayingTuple[0][3].encode('utf-8', 'replace'), #albumart path
+									runtime)											# runtime
 	else:
 		currentTrack = SingleTrack('Artist','Title','Album','images/no-album.png', "0:00")
 	
@@ -224,11 +243,11 @@ def buildIndex():
 	
 	chartList = []
 	for i in topvotesTuple:
-		myChartItem = Chartitem(i[0].encode('utf-8', 'replace'),
-								i[1].encode('utf-8', 'replace'), 
-								i[2], 
-								i[3],
-								i[4])
+		myChartItem = Chartitem(i[0].encode('utf-8', 'replace'), # artist
+								i[1].encode('utf-8', 'replace'), # title
+								i[2], 							 # votes
+								i[3].encode('utf-8', 'replace'), # albumartpath
+								i[4])							 # id
 		chartList.append(myChartItem)
 	
 	# close db connection

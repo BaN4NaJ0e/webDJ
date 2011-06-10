@@ -22,8 +22,8 @@ def nowPlaying():
 	cursor = connection.cursor()
 	currentfile = subprocess.Popen(['mpc','-f','"%file%"','current'], stdout=subprocess.PIPE).communicate()[0].replace('"','').rstrip()
 	# execute can't handle simple strings for substitution so lets put it in a tuple
-	currentpath = [settings.musicfolder + "/" + currentfile]
-	cursor.execute("""SELECT artist,title,album,albumart,tracklength FROM musiclib WHERE path == ?;""",currentpath)
+	currentpath = [settings.musicfolder + "/" + unicode(currentfile, "utf-8") ]
+	cursor.execute("""SELECT artist, title, album, albumart, tracklength FROM musiclib WHERE path == ?;""", currentpath )
 	nowPlayingTuple = cursor.fetchall()
 	connection.close()
 	return nowPlayingTuple
@@ -36,7 +36,7 @@ def resetVotes():
 		cursor = connection.cursor()
 		currentfile = subprocess.Popen(['mpc','-f','"%file%"','current'], stdout=subprocess.PIPE).communicate()[0].replace('"','').rstrip()
 		# execute can't handle simple strings for substitution so lets put it in a tuple
-		currentpath = [settings.musicfolder + "/" + currentfile]
+		currentpath = [settings.musicfolder + "/" + unicode(currentfile, "utf-8") ]
 		cursor.execute("""SELECT id FROM musiclib WHERE path==?;""",currentpath)
 		idTuple = cursor.fetchall()
 		if len(idTuple) == 1 :
