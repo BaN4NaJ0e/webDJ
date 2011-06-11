@@ -8,6 +8,7 @@ import votedb
 from web.contrib.template import render_cheetah
 from Cheetah.Template import Template
 import settings
+import adminControls
 
 render = render_cheetah('templates/')
 
@@ -17,6 +18,7 @@ urls = (
 	'/images/(.*)', 'images', 
 	'/liked/(.*)', 'liked', 
 	'/hated/(.*)', 'hated',
+	'/admin/(.*)', 'admin',
 	'/notification/', 'notification',
 	'/voted/', 'voted',
 	'/request/', 'request',
@@ -42,6 +44,17 @@ class login:
 					return	render.login_error()
 			except:
 				return	render.login_error()
+
+class admin:
+	def POST(self, code):
+		if code  == "resVotes" :
+			adminControls.resetAllVotes()
+		elif code == "resLastPlay":
+			adminControls.resetLastPlayed()
+		else:
+			pass
+		raise web.seeother('/')
+
 
 # html page for votes
 class liked:
