@@ -11,8 +11,12 @@ cheetah
 webpy
 
 initial setup:
-run python createMusicLib.py /path/to/music
+run python createMusicLib.py /path/to/music or set your path in the settings.py
 to create the music database
-change variable musicfolder in mpdPlayer.py to /path/to/music
+
+change variable musicfolder in settings.py to /path/to/your/music
+should be the same path you used in the createMusicLib
+
 run python webpy.py
-access webinterface via http://localhost:8080/index/
+access webinterface via http://localhost:8080/
+vote songs and have fun!
