@@ -7,6 +7,7 @@ import sqlite3
 import shutil
 import eyeD3
 import settings
+import coverGrabber
 
 fileList = []
 coverArtList = []
@@ -57,6 +58,10 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS musiclib (
 				votetime FLOAT, 
 				lastplayed FLOAT)""")
 
+# remember already downloaded cover images from last.fm
+# it is only necessary to download the cover for at least one file of every album
+coverDictionary = {"artistAndAlbum" : "path"}
+
 # add every musicfile with id3tag information to db
 id = 0
 for file in fileList :
@@ -70,11 +75,11 @@ for file in fileList :
 			
 		albumartpath = ""
 		
-		# prevent that empty tags get into the db
+		# prevent that empty tagged music files get into the db
 		if tag.getArtist() == "" or tag.getAlbum() == "" or tag.getTitle() == "" :
 			continue
 			
-		# get album art path and copy all cover images to webserver folder
+		# get album cover path and copy all cover images to webserver image folder
 		illegalChars = re.compile(r'[\/:*?"<>| ]+',re.U)
 		for coverpath in coverArtList :
 			if os.path.dirname(file) == os.path.split(coverpath)[0] :
@@ -84,13 +89,26 @@ for file in fileList :
 				except IOError:
 					albumartpath = ""
 					print "error copy folderart:\n"+ str(coverpath) +"to\n" +str(albumartpath)
-					
-
-		# put in placeholder image for tracks with no albumart found		
-		if albumartpath == "" :
-			albumartpath = "images/no-album.png"
-
-	
+		
+		# if no album cover was found localy or other file of same album with same cover was not found
+		if albumartpath == "" and (tag.getArtist()+tag.getAlbum()) not in coverDictionary:
+			# try to download missing album art from last.fm homepage
+			if coverGrabber.downloadAlbumArt(tag.getArtist(),tag.getAlbum()):
+				albumartpath = "images/" + illegalChars.sub(' ',tag.getArtist()) +"_" + illegalChars.sub(' ',tag.getAlbum()) +".png"
+				newCover = {tag.getArtist()+tag.getAlbum(): albumartpath}
+				coverDictionary.update(newCover)
+			else:
+				# put in placeholder image for tracks with no albumart found on last.fm
+				albumartpath = "images/no-album.png"
+				newCover = {tag.getArtist()+tag.getAlbum(): albumartpath}
+				coverDictionary.update(newCover)
+		elif albumartpath == "" and (tag.getArtist()+tag.getAlbum()) in coverDictionary:
+			# no local cover found but already downloaded for another file of this album from last.fm
+			albumartpath = coverDictionary[tag.getArtist()+tag.getAlbum()]
+		else:
+			newCover = {tag.getArtist()+tag.getAlbum(): albumartpath}
+			coverDictionary.update(newCover)
+		
 		fileinfos = [id,
 			file.decode('utf-8'),
 			tag.getArtist(),

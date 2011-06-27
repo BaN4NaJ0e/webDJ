@@ -136,8 +136,6 @@ def buildArtists():
 		
 	# close db connection
 	connection.close()
-
-	pprint.pprint(artists)
 	
 	nameSpace = {'artists': artists}
 	t= Template(file="templates/artists.html", searchList=[nameSpace])

@@ -1,22 +1,29 @@
 music playback is realized through music player daemon, so mpd and mpc should be installed and configured.
 
-MPD Guide: http://mpd.wikia.com/wiki/Configuration
+
 mpd --create-db
 /etc/init.d/mpd restart
 
-pyhton libs needed:
+python libraries needed:
 
 eyed3
 cheetah
 webpy
+-> all available via ubuntu apt-get
+
+pylast -> download from http://pypi.python.org/pypi/pylast
+
 
 initial setup:
-run python createMusicLib.py /path/to/music or set your path in the settings.py
+Install music player daemon
+MPD Guide: http://mpd.wikia.com/wiki/Configuration
+
+open settings.py and change variable "musicfolder" to "/path/to/your/musicfolder"
+the path should be the same path you used in the in your mpd config file
+
+run: python createMusicLib.py in a terminal
 to create the music database
 
-change variable musicfolder in settings.py to /path/to/your/music
-should be the same path you used in the createMusicLib
-
-run python webpy.py
-access webinterface via http://localhost:8080/
+run: python webpy.py
+access webinterface via http://localhost:8080/ with your browser of choice
 vote songs and have fun!
