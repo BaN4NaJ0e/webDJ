@@ -1,18 +1,14 @@
 music playback is realized through music player daemon, so mpd and mpc should be installed and configured.
 
-
-mpd --create-db
-/etc/init.d/mpd restart
-
 python libraries needed:
 
 eyed3
 cheetah
 webpy
--> all available via ubuntu apt-get
+-> all available via ubuntu apt
 
 pylast -> download from http://pypi.python.org/pypi/pylast
-
+Execute "python setup.py install" as a super user to install pylast
 
 initial setup:
 Install music player daemon
@@ -23,7 +19,9 @@ the path should be the same path you used in the in your mpd config file
 
 run: python createMusicLib.py in a terminal
 to create the music database
+check if mucke.db file was created
 
+start WebDJ with:
 run: python webpy.py
 access webinterface via http://localhost:8080/ with your browser of choice
 vote songs and have fun!
