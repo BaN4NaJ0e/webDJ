@@ -46,6 +46,7 @@ class Historyitem:
 		self.album = album
 		self.albumart = albumart
 		self.lastplayed = lastplayed
+		
 
 # check and put incoming song vote from user into db
 # returncodes 
@@ -94,17 +95,49 @@ def buildArtists():
 	connection = sqlite3.connect("mucke.db")
 	cursor = connection.cursor()
 	
-	# abfragen aller artists ohne doppelte eintraege
-	cursor.execute("""SELECT DISTINCT artist FROM musiclib;""")
-	artistsTupel = cursor.fetchall()
+	#Todo: add numbers too
+	alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 	
 	artists = []
 	
-	for artist in artistsTupel:
-		artists.append(artist[0].encode('utf-8', 'replace'))
+	# add all artist starting with numbers in the name
+	cursor.execute(""" SELECT DISTINCT artist FROM musiclib WHERE artist LIKE '1%' 
+											  OR artist LIKE '2%'
+											  OR artist LIKE '3%'
+											  OR artist LIKE '4%'
+											  OR artist LIKE '5%'
+											  OR artist LIKE '6%'
+											  OR artist LIKE '7%'
+											  OR artist LIKE '8%'
+											  OR artist LIKE '9%'
+											  OR artist LIKE '0%'; """)
+	artistsTupel = cursor.fetchall()
 	
+	artistGroup = ["0-9",[]]
+	
+	for artist in artistsTupel:
+			artistGroup[1].append(artist[0].encode('utf-8', 'replace'))
+	
+	artists.append(artistGroup)								
+	
+	for letter in alphabet:
+		
+		# all artist with same beginning letter
+		artistGroup = [letter,[]]
+	
+		# abfragen aller artists ohne doppelte eintraege
+		cursor.execute("""SELECT DISTINCT artist FROM musiclib WHERE artist LIKE '""" +letter +"""%';""")
+		artistsTupel = cursor.fetchall()
+		
+		for artist in artistsTupel:
+			artistGroup[1].append(artist[0].encode('utf-8', 'replace'))
+	
+		artists.append(artistGroup)
+		
 	# close db connection
 	connection.close()
+
+	pprint.pprint(artists)
 	
 	nameSpace = {'artists': artists}
 	t= Template(file="templates/artists.html", searchList=[nameSpace])
