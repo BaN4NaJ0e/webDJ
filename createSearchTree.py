@@ -117,8 +117,9 @@ def buildArtists():
 	
 	for artist in artistsTupel:
 			artistGroup[1].append(artist[0].encode('utf-8', 'replace'))
-	
-	artists.append(artistGroup)								
+
+	if len(artistGroup[1])  > 0 :
+		artists.append(artistGroup)
 	
 	for letter in alphabet:
 		
@@ -131,8 +132,10 @@ def buildArtists():
 		
 		for artist in artistsTupel:
 			artistGroup[1].append(artist[0].encode('utf-8', 'replace'))
-	
-		artists.append(artistGroup)
+		
+		# only add alphebetical groups with artists
+		if len(artistGroup[1])  > 0 :
+			artists.append(artistGroup)
 		
 	# close db connection
 	connection.close()
