@@ -18,7 +18,7 @@
 
 function load_list(list, list_array) {
 	\$('#'+list +' > li').remove();
-	var newList = ""
+	var newList = "" ;
 	for (var i = 0; i < list_array.length-1; i++) {
 		newList += '<li><a href="/artists/?artist=' +list_array[i] +'" rel="external">'+list_array[i] +'</a></li>';
 		}
@@ -41,17 +41,14 @@ function load_list(list, list_array) {
 
 <div data-role="content">
 
-<ul data-role="listview" data-theme="d" data-filter="false">
-	<div data-role="collapsible-set" class="ui-collapsible-set">
 		#for $letter in $artists
-			<div data-role="collapsible" data-collapsed="true" onclick="load_list('artistslist_$letter[0]', artists_$letter[0])">
+			<div data-role="button" data-theme="d" onclick="load_list('artistslist_$letter[0]', artists_$letter[0])">
 			<h3>$letter[0]</h3>
-				<ul data-role="listview" data-theme="d" data-filter="false" id="artistslist_$letter[0]">
+				<ul data-role="listview" data-theme="d" id="artistslist_$letter[0]">
 				</ul>
 			</div>
 		#end for
-	</div>
-</ul>
+
 	
  </div><!-- /content -->
 
