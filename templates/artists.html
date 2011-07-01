@@ -2,9 +2,32 @@
   <head>
 	<title>vote your song!</title>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="/static/jquery.mobile-1.0b1.css" />
 	<script src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
 	<script src="/static/jquery.mobile-1.0b1.min.js"></script>
+
+<script type="text/javascript">
+#for $letter in $artists
+	var artists_$letter[0] =[#for $artist in $letter[1]
+							"$artist",
+							#end for
+							""];
+#end for
+
+
+function load_list(list, list_array) {
+	\$('#'+list +' > li').remove();
+	var newList = ""
+	for (var i = 0; i < list_array.length-1; i++) {
+		newList += '<li><a href="/artists/?artist=' +list_array[i] +'" rel="external">'+list_array[i] +'</a></li>';
+		}
+	\$('#'+list).html(newList).listview('refresh');
+	}
+
+
+</script>
+
 
 </head>
 <body class="index">
@@ -19,16 +42,15 @@
 <div data-role="content">
 
 <ul data-role="listview" data-theme="d" data-filter="false">
+	<div data-role="collapsible-set" class="ui-collapsible-set">
 		#for $letter in $artists
-			<div data-role="collapsible" data-collapsed="true">
+			<div data-role="collapsible" data-collapsed="true" onclick="load_list('artistslist_$letter[0]', artists_$letter[0])">
 			<h3>$letter[0]</h3>
-				<p>
-				#for $artist in $letter[1]
-					<a href="/artists/?artist=$artist" rel="external">$artist</a> <br>
-				#end for
-				</p>
+				<ul data-role="listview" data-theme="d" data-filter="false" id="artistslist_$letter[0]">
+				</ul>
 			</div>
 		#end for
+	</div>
 </ul>
 	
  </div><!-- /content -->

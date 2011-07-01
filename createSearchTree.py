@@ -113,7 +113,7 @@ def buildArtists():
 											  OR artist LIKE '0%'; """)
 	artistsTupel = cursor.fetchall()
 	
-	artistGroup = ["0-9",[]]
+	artistGroup = ["123",[]]
 	
 	for artist in artistsTupel:
 			artistGroup[1].append(artist[0].encode('utf-8', 'replace'))
