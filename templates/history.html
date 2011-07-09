@@ -1,11 +1,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
 	<title>vote your song!</title>
-	 <meta charset="utf-8">
-	<link rel="stylesheet" href="/static/jquery.mobile-1.0a4.1.css" />
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
-	<script type="text/javascript" src="/static/jquery.mobile-1.0a4.1-fix.js"></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/static/jquery.mobile-1.0b1.css" />
+	<script src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
+	<script src="/static/jquery.mobile-1.0b1.min.js"></script>
 
 </head>
 <body class="index">
@@ -22,9 +22,9 @@
 			#for $item in $history
 			  <li>
 				<img src="../$item.albumart" alt="albumart" class="ui-li-thumb">
-				<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.songtitle</i> </h2>
-				<p> $item.album </p>
-				<span class="ui-li-aside"> <p>last played:<br> <b>$item.lastplayed</b><br>minute(s) ago</p> </span>
+				<h2 class="ui-li-heading" style="white-space:normal"> <b>$item.artist</b> <br> <i>$item.songtitle</i> </h2>
+				<p style="white-space:normal"> $item.album </p>
+				<span class="ui-li-aside"> <p style="white-space:normal">last time played:<br> <b>$item.lastplayed</b> minute(s) ago</p> </span>
 			  </li>
 			#end for
 		</ol>
