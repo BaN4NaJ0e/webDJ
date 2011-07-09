@@ -14,6 +14,9 @@ initial setup:
 Install music player daemon
 MPD Guide: http://mpd.wikia.com/wiki/Configuration
 
+You will also need the programm "MPC" to communicate with the Music Player Daemon via shell
+install it also via ubuntu packet manager
+
 open settings.py and change variable "musicfolder" to "/path/to/your/musicfolder"
 the path should be the same path you used in the in your mpd config file
 
