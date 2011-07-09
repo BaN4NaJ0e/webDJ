@@ -15,16 +15,16 @@
 							""];
 #end for
 
-
-function load_list(list, list_array) {
-	var newList = "" ;
+function load_list(list_array) {
+	var newList = '<ul data-role="listview" data-theme="d" id="mylist" style="white-space:normal">' ;
+	newList += '<li><a href="/artists/" rel="external">...</a></li>';
 	for (var i = 0; i < list_array.length-1; i++) {
 		newList += '<li><a href="/artists/?artist=' +list_array[i] +'" rel="external">'+list_array[i] +'</a></li>';
 		}
-	\$('#'+list).html(newList).listview('refresh');
+	newList += '</ul>' ;
+	\$('#contentpage').html(newList);
+	\$("#mylist").listview();
 	}
-
-
 </script>
 
 
@@ -34,28 +34,42 @@ function load_list(list, list_array) {
 <div data-role="page" id="home" >
 
 	<div data-role="header" data-theme="b">
-	<a href="/" rel="external" data-icon="home">home</a>
-	<h2>pick artist</h2>
+		<a href="/" rel="external" data-icon="home" id=headerbutton>home</a>
+		<h2>pick artist</h2>
 	</div><!-- /header -->
 
-<div data-role="content">
-		
+<div data-role="content" id="contentpage">
+
+<!-- counting column number to put a, b or c to block class -->
+#set $counter=0
+
+		<div class="ui-grid-b">
 		#for $letter in $artists
-			<div data-role="button" data-theme="d" onclick="load_list('artistslist_$letter[0]', artists_$letter[0])">
-			<h3 align="left">$letter[0]</h3>
-				<ul data-role="listview" data-theme="d" id="artistslist_$letter[0]" style="white-space:normal">
-				</ul>
+			<div class="ui-block-#slurp
+			#if $counter == 0
+a"> 
+			#set $counter += 1
+			#else if $counter == 1
+b"> 
+			#set $counter += 1
+			#else if $counter == 2
+c"> 
+			#set $counter = 0
+			#end if
+				<div data-role="button" data-theme="d" onclick="load_list(artists_$letter[0])">
+					<h2>$letter[0]</h2>
+				</div>
 			</div>
 		#end for
-
+		</div>
 	
- </div><!-- /content -->
+ </div><!-- /content end-->
 
  <div data-role="footer" data-theme="d">
  <h4> &copy 2011 </h4>
- </div><!-- /footer -->
+ </div><!-- /footer end-->
 
-</div><!-- /page -->
+</div><!-- /page end-->
 
 </body>
 
