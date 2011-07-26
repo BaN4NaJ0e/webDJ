@@ -100,7 +100,7 @@ def buildArtists():
 	
 	artists = []
 	
-	# add all artist starting with numbers in the name
+	# get all artist starting with numbers in the name
 	cursor.execute(""" SELECT DISTINCT artist FROM musiclib WHERE artist LIKE '1%' 
 											  OR artist LIKE '2%'
 											  OR artist LIKE '3%'
@@ -203,6 +203,31 @@ def buildAlben(artistname):
 	print "## created songtree for: "+ artistname
 	return t
 
+# build seachpage html
+def buildSearchpage():
+	# open sqlite db connection
+	connection = sqlite3.connect("mucke.db")
+	cursor = connection.cursor()
+	
+	##############################
+	# get all artists
+	##############################
+	cursor.execute("""SELECT DISTINCT artist FROM musiclib ;""")
+	artistsTuple = cursor.fetchall()
+	
+	artistList = []
+	
+	for i in artistsTuple:
+		artistList.append(i[0].encode('utf-8', 'replace'))
+	
+	# close db connection
+	connection.close()
+	
+	nameSpace = {'artists': artistList }
+	t= Template(file="templates/search.html", searchList=[nameSpace])
+	
+	print "## build search.html"
+	return t
 
 # build playlist history html
 def buildHistory():

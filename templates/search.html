@@ -1,0 +1,66 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>vote your song!</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b1/jquery.mobile-1.0b1.min.css" />
+	<script src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
+	<script src="/static/jquery.mobile-1.0b1.min.js"></script>
+
+	<link rel="stylesheet" href="/static/jquery.autocomplete.css" type="text/css" />
+	<script type="text/javascript" src="/static/jquery.bgiframe.min.js"></script>
+	<script type="text/javascript" src="/static/jquery.autocomplete.js"></script>
+	<script>
+	\$(document).ready(function(){
+	
+	var data =[#for $artist in $artists
+							"$artist",
+					#end for
+							""];
+	
+	
+	
+	\$("#example").autocomplete(data, {
+		max:10,
+		matchSubset:1, 
+		matchContains:1
+	});
+	
+  });
+  
+  function loadArtistPage()
+  {
+  	var theUrl = "../artists/?artist=" +document.getElementById('example').value ;
+  	// http://localhost:8080/artists/?artist=Charlie%20Sexton
+  if (theUrl != ""){
+      location.href = theUrl ;
+  }
+  }
+  </script>
+
+</head>
+<body class="index">
+
+<div data-role="page" id="home">
+ 
+	 <div data-role="header" data-theme="e">
+	 <a href="/" rel="external" data-icon="home" id=headerbutton>home</a>
+	 <h2>WebDJ</h2>
+	 </div><!-- /header -->
+
+<div data-role="content">
+<h3>Search Artist:</h3>
+<input id="example" name="artist"/>
+<input type="submit" value="go" onclick="loadArtistPage()"/>
+
+ </div><!-- /content -->
+
+ <div data-role="footer" data-theme="d">
+ <h4> &copy 2011 </h4>
+ </div><!-- /footer -->
+
+</div><!-- /page -->
+
+</body>
+
+</html>

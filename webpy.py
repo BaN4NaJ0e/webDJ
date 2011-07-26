@@ -25,6 +25,7 @@ urls = (
 	'/artists/', 'artists',
 	'/login', 'login',
 	'/reset', 'reset',
+	'/search/', 'search',
 	'/history/', 'history'
 )
 
@@ -132,6 +133,12 @@ class request:
 	def GET(self):
 		requestHtml = createSearchTree.buildRequest()
 		return requestHtml
+		
+# request song page
+class search:		
+	def GET(self):
+		searchHtml = createSearchTree.buildSearchpage()
+		return searchHtml
 
 # handling images in website (albumart,..)
 class images:
