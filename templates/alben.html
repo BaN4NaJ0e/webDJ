@@ -24,7 +24,7 @@
 	<li data-role="list-divider">choose album</li>	
 	#for $album in $alben
 			<li>
-				<a href="/tracks/?artist=$artist&album=$album.name" rel="external">
+				<a href="/tracks/?artist=$artist&album=$album.name" >
 				<img src="../$album.coverpath" alt="albumart" class="ui-li-thumb" >
 				<h3 class="ui-li-heading">$album.name</h3>
 				<p class="ui-li-desc">$album.year</p>
