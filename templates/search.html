@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>vote your song!</title>
+    <title>search for an artist!</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b1/jquery.mobile-1.0b1.min.css" />
@@ -11,14 +11,13 @@
 	<script type="text/javascript" src="/static/jquery.bgiframe.min.js"></script>
 	<script type="text/javascript" src="/static/jquery.autocomplete.js"></script>
 	<script>
-	\$(document).ready(function(){
 	
 	var data =[#for $artist in $artists
 							"$artist",
 					#end for
 							""];
 	
-	
+	\$(document).ready(function(){
 	
 	\$("#example").autocomplete(data, {
 		max:10,
@@ -27,15 +26,20 @@
 	});
 	
   });
-  
-  function loadArtistPage()
-  {
-  	var theUrl = "../artists/?artist=" +document.getElementById('example').value ;
+
+	function loadArtistPage()
+	{
+  	var artistname = document.getElementById('example').value ;
+  	var theUrl = "../artists/?artist=" +artistname ;
   	// http://localhost:8080/artists/?artist=Charlie%20Sexton
-  if (theUrl != ""){
-      location.href = theUrl ;
-  }
-  }
+  	
+		if ( (theUrl != "") && \$.inArray(artistname, data ) > 0 ){
+				location.href = theUrl ;
+		}
+		else {
+			\$("#meldung").html("<h3> <font color='#FF0000'>artist not found<br>please search again</font> </h3>");
+		}
+	}
   </script>
 
 </head>
@@ -49,7 +53,8 @@
 	 </div><!-- /header -->
 
 <div data-role="content">
-<h3>Search Artist:</h3>
+<p>Search Artist:</p>
+<div id="meldung"></div>
 <input id="example" name="artist"/>
 <input type="submit" value="go" onclick="loadArtistPage()"/>
 

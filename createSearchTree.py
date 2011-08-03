@@ -167,7 +167,7 @@ def buildAlben(artistname):
 		
 		# get all tracks for each album
 		alb = (album[0],artistname)
-		cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=? AND artist=?;""", alb )
+		cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=? AND artist=? ORDER BY id ASC;""", alb )
 		albumtracksTuple = cursor.fetchall()
 		tracks = []
 		#pprint.pprint( albumtracksTuple )
