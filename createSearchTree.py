@@ -9,18 +9,20 @@ import settings
 
 
 class Album:
-	def __init__(self, name, coverpath, year, tracks):
+	def __init__(self, name, coverpath, year):
 		self.name = name
 		self.coverpath = coverpath
 		self.year = year
-		self.tracks = tracks
 
 class Track:
-	def __init__(self, name, trackid, votes, runtime):
+	def __init__(self, name, trackid, votes, runtime, albumname, albumart, year):
 		self.name = name
 		self.id = trackid
 		self.votes = votes
 		self.runtime = runtime
+		self.albumname = albumname
+		self.coverpath = albumart
+		self.year = year
 
 class Chartitem:
 	def __init__(self, artist, song, votes, albumart, trackid):
@@ -146,64 +148,86 @@ def buildArtists():
 	print "## updated artists.html"
 	return t
 
-# get all albums and tracks for the given artist
-def buildAlben(artistname):
+def buildTracks(albumname, artistname):
+	
 	# open sqlite db connection
 	connection = sqlite3.connect("mucke.db")
 	cursor = connection.cursor()
 	
-	t = (artistname,)
-	# frage vom künstler alle alben ab
-	cursor.execute("""SELECT DISTINCT album FROM musiclib WHERE artist=?;""", t )
-	albenTuple = cursor.fetchall()
+	# get all tracks for a certain album
+	alb = (albumname,artistname)
+	cursor.execute("""SELECT title, id, votes, tracklength, album, albumart, year FROM musiclib WHERE album=? AND artist=? ORDER BY id ASC;""", alb )
+	albumtracksTuple = cursor.fetchall()
+	
+	# close db connection
+	connection.close()
+	
+	tracks = []
+	#pprint.pprint( albumtracksTuple )
+	for track in albumtracksTuple:
+		releaseYear = track[6]
+		
+		# if no release year was found set it to palceholder -
+		if releaseYear ==  None:
+			releaseYear = "-"
+		else :
+			releaseYear = track[6].encode('utf-8', 'replace')
+	
+		myTrack = Track( track[0].encode('utf-8', 'replace'),	# title
+						 track[1],								# track id
+						 track[2],								# votes
+						 track[3],								# tracklength
+						 track[4].encode('utf-8', 'replace'),	# albumname
+						 track[5].encode('utf-8', 'replace'),	# coverpath
+						 releaseYear)							# releaseyear
+		tracks.append(myTrack)
+			
+	nameSpace = {'tracks': tracks, 'artist': artistname.encode('utf-8', 'replace')}
+	t= Template(file="templates/tracks.html", searchList=[nameSpace])
+	
+	print "## created trackpage"
+	return t
+
+# get all albums for the given artist
+def buildAlben(artistname):
+
+	# open sqlite db connection
+	connection = sqlite3.connect("mucke.db")
+	cursor = connection.cursor()
+	
 	alben = []
 	
-	# von jedem album die tracks abfragen
-	for album in albenTuple:
-		t = (album[0],)
-		# get path to albumart folder.jpg and release year
-		cursor.execute("""SELECT DISTINCT albumart, year FROM musiclib WHERE album=?;""", t )
-		resultTupel = cursor.fetchall()
+	t = (artistname,)
+
+	cursor.execute("""SELECT DISTINCT album, albumart, year FROM musiclib WHERE artist=?;""", t )
+	resultTupel = cursor.fetchall()
+	
+	# close db connection
+	connection.close()
+	
+	for result in resultTupel:
 		
-		# get all tracks for each album
-		alb = (album[0],artistname)
-		cursor.execute("""SELECT DISTINCT title,id,votes,tracklength FROM musiclib WHERE album=? AND artist=? ORDER BY id ASC;""", alb )
-		albumtracksTuple = cursor.fetchall()
-		tracks = []
-		#pprint.pprint( albumtracksTuple )
-		for track in albumtracksTuple:
-			myTrack = Track( track[0].encode('utf-8', 'replace'),	# title
-							 track[1] ,								# track id
-							 track[2],								# votes
-							 track[3])								# tracklength
-			tracks.append(myTrack)
-		
-		releaseYear = resultTupel[0][1]
+		releaseYear = result[2]
 		
 		# if no release year was found set it to palceholder
 		if releaseYear ==  None:
 			releaseYear = "-"
 		else :
-			releaseYear = resultTupel[0][1].encode('utf-8', 'replace')
-		
-		myAlbum = Album(album[0].encode('utf-8', 'replace'),			# album name
-						resultTupel[0][0].encode('utf-8', 'replace'),	# coverpath
-						releaseYear,									# album release year
-						tracks )										# all album tracks
+			releaseYear = result[2].encode('utf-8', 'replace')
+	
+		myAlbum = Album(result[0].encode('utf-8', 'replace'),	# album name
+						result[1].encode('utf-8', 'replace'),	# coverpath
+						releaseYear)							# album release year
+					
 		alben.append(myAlbum)
-		
-	# close db connection
-	connection.close()
 	
-	artistname = artistname.encode('utf-8', 'replace')
-	
-	nameSpace = {'alben': alben, 'artist': artistname}
+	nameSpace = {'alben': alben, 'artist': artistname.encode('utf-8', 'replace')}
 	t= Template(file="templates/alben.html", searchList=[nameSpace])
 	
 	print "## created songtree for: "+ artistname
 	return t
 
-# build seachpage html
+# build artist seachpage html
 def buildSearchpage():
 	# open sqlite db connection
 	connection = sqlite3.connect("mucke.db")
@@ -215,13 +239,14 @@ def buildSearchpage():
 	cursor.execute("""SELECT DISTINCT artist FROM musiclib ;""")
 	artistsTuple = cursor.fetchall()
 	
+	# close db connection
+	connection.close()
+	
 	artistList = []
 	
 	for i in artistsTuple:
 		artistList.append(i[0].encode('utf-8', 'replace'))
 	
-	# close db connection
-	connection.close()
 	
 	nameSpace = {'artists': artistList }
 	t= Template(file="templates/search.html", searchList=[nameSpace])
@@ -241,6 +266,9 @@ def buildHistory():
 	cursor.execute("""SELECT artist, title, album, albumart, lastplayed FROM musiclib WHERE lastplayed > '0' ORDER BY lastplayed DESC LIMIT 10;""")
 	historyTuple = cursor.fetchall()
 	
+	# close db connection
+	connection.close()
+	
 	historyList = []
 	
 	for i in historyTuple:
@@ -257,9 +285,6 @@ def buildHistory():
 	# remove item that is playing now from list
 	if len(historyList) > 1 and not mpdPlayer.isNotPlaying(): 
 		historyList.pop(0)
-	
-	# close db connection
-	connection.close()
 	
 	nameSpace = {'history': historyList }
 	t= Template(file="templates/history.html", searchList=[nameSpace])
@@ -300,6 +325,9 @@ def buildIndex():
 	cursor.execute("""SELECT artist, title, votes, albumart, id FROM musiclib WHERE votes > '0' ORDER BY votes DESC, votetime ASC LIMIT 10;""")
 	topvotesTuple = cursor.fetchall()
 	
+	# close db connection
+	connection.close()
+	
 	chartList = []
 	for i in topvotesTuple:
 		myChartItem = Chartitem(i[0].encode('utf-8', 'replace'), # artist
@@ -308,9 +336,6 @@ def buildIndex():
 								i[3].encode('utf-8', 'replace'), # albumartpath
 								i[4])							 # id
 		chartList.append(myChartItem)
-	
-	# close db connection
-	connection.close()
 	
 	nameSpace = {'charts': chartList, 'current': currentTrack }
 	t= Template(file="templates/index.html", searchList=[nameSpace])

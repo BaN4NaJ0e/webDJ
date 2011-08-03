@@ -21,7 +21,7 @@ urls = (
 	'/admin/(.*)', 'admin',
 	'/notification/', 'notification',
 	'/voted/', 'voted',
-	'/request/', 'request',
+	'/tracks/', 'tracks',
 	'/artists/', 'artists',
 	'/login', 'login',
 	'/reset', 'reset',
@@ -103,6 +103,19 @@ class notification:
 	def GET(self):
 		return render.notification()
 		
+# show all tracks of an album
+class tracks:
+	def GET(self):
+		urlInput = web.input(artist = '', album='')
+		artist = urlInput.artist
+		album = urlInput.album
+		
+		if artist == "" or album == "":
+			requestHtml = createSearchTree.buildArtists()
+			return requestHtml
+		else:
+			tracksHtml = createSearchTree.buildTracks(album, artist)
+			return tracksHtml
 		
 # history page
 class history:		
@@ -127,14 +140,8 @@ class artists:
 		else:
 			requestHtml = createSearchTree.buildAlben(artist)
 			return requestHtml
-
-# request song page
-class request:		
-	def GET(self):
-		requestHtml = createSearchTree.buildRequest()
-		return requestHtml
 		
-# request song page
+# search artist page
 class search:		
 	def GET(self):
 		searchHtml = createSearchTree.buildSearchpage()
