@@ -144,6 +144,8 @@ class search:
 class images:
 	def GET(self,name):
 		ext = name.split(".")[-1] # Gather extension
+		# umlaute in cover pathnames
+		name = name.encode('utf-8', 'replace')
 
 		cType = {
 			"png":"images/png",
