@@ -32,12 +32,14 @@
   	var artistname = document.getElementById('example').value ;
   	var theUrl = "../artists/?artist=" +artistname ;
   	// http://localhost:8080/artists/?artist=Charlie%20Sexton
+  	console.log(artistname);
   	
-		if ( (theUrl != "") && \$.inArray(artistname, data ) > 0 ){
+		if (artistname.length != 0 && \$.inArray(artistname, data ) > 0 ){
 				location.href = theUrl ;
 		}
 		else {
 			\$("#meldung").html("<h3> <font color='#FF0000'>artist not found<br>please search again</font> </h3>");
+			\$("#example").val("");
 		}
 	}
   </script>
@@ -55,7 +57,7 @@
 <div data-role="content">
 <p>Search Artist:</p>
 <div id="meldung"></div>
-<input type="text" id="example" name="artist"/>
+<input type="text" id="example" name="artist" />
 <input type="submit" value="go" onclick="loadArtistPage()"/>
 
  </div><!-- /content -->
