@@ -19,7 +19,7 @@ function load_list(list_array) {
 	var newList = '<ul data-role="listview" data-theme="d" id="mylist" style="white-space:normal">' ;
 	newList += '<li><a href="/artists/" rel="external">...</a></li>';
 	for (var i = 0; i < list_array.length-1; i++) {
-		newList += '<li><a href="/artists/?artist=' +list_array[i] +'">'+list_array[i] +'</a></li>';
+		newList += '<li><a href="/artists/?artist=' +list_array[i].replace("&","%26") +'">'+list_array[i] +'</a></li>';
 		}
 	newList += '</ul>' ;
 	\$('#contentpage').html(newList);

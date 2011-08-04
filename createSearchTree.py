@@ -120,6 +120,7 @@ def buildArtists():
 	for artist in artistsTupel:
 			artistGroup[1].append(artist[0].encode('utf-8', 'replace'))
 
+	# add only if artists where found with numbers starting in name
 	if len(artistGroup[1])  > 0 :
 		artists.append(artistGroup)
 	
@@ -135,7 +136,7 @@ def buildArtists():
 		for artist in artistsTupel:
 			artistGroup[1].append(artist[0].encode('utf-8', 'replace'))
 		
-		# only add alphebetical groups with artists
+		# only add artist groups when artist where found with this beginning letter
 		if len(artistGroup[1])  > 0 :
 			artists.append(artistGroup)
 		
@@ -177,11 +178,13 @@ def buildTracks(albumname, artistname):
 						 track[1],								# track id
 						 track[2],								# votes
 						 track[3],								# tracklength
-						 track[4].encode('utf-8', 'replace'),	# albumname
+						 track[4].encode('utf-8', 'replace').replace("&","%26"),	# albumname
 						 track[5].encode('utf-8', 'replace'),	# coverpath
 						 releaseYear)							# releaseyear
 		tracks.append(myTrack)
-			
+	
+	artistname = artistname.replace("&","%26")
+	
 	nameSpace = {'tracks': tracks, 'artist': artistname.encode('utf-8', 'replace')}
 	t= Template(file="templates/tracks.html", searchList=[nameSpace])
 	
@@ -220,6 +223,8 @@ def buildAlben(artistname):
 						releaseYear)							# album release year
 					
 		alben.append(myAlbum)
+	
+	artistname = artistname.replace("&","%26")
 	
 	nameSpace = {'alben': alben, 'artist': artistname.encode('utf-8', 'replace')}
 	t= Template(file="templates/alben.html", searchList=[nameSpace])
