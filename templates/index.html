@@ -1,11 +1,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
+<head>
 	<title>vote your song!</title>
-	 <meta charset="utf-8">
-	 <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="/static/jquery.mobile-1.0b1.css" />
-	<script src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
-	<script src="http://code.jquery.com/mobile/1.0b1/jquery.mobile-1.0b1.min.js"></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="stylesheet" href="/static/jquery.mobile-1.0b2.css" />
+	<script src="/static/jquery-1.6.2.min.js"></script>
+	<script src="/static/jquery.mobile-1.0b2.min.js"></script>
 
 </head>
 <body class="index">
@@ -32,12 +33,12 @@
 				#for $item in $charts
 				  <li>
 					<img src="$item.albumart" alt="albumart" class="ui-li-thumb">
-					<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
+					<h2 class="ui-li-heading" style="white-space:normal" > <b>$item.artist</b> <br> <i>$item.song</i> </h2>
 					<span class="ui-li-count"> <h2> $item.votes </h2> </span>
 						<ul data-role="listview" data-theme="c">
 								<li>
 								<img src="$item.albumart" alt="albumart" class="ui-li-thumb">
-								<h2 class="ui-li-heading"> <b>$item.artist</b> <br> <i>$item.song</i> </h2>
+								<h2 class="ui-li-heading" style="white-space:normal" > <b>$item.artist</b> <br> <i>$item.song</i> </h2>
 								<span class="ui-li-count"> <h2> $item.votes </h2> </span>
 								</li>
 								<div data-role="controlgroup" data-theme="b">
