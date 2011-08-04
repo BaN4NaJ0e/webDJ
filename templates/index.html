@@ -14,7 +14,7 @@
 <div data-role="page" id="home">
 
 	<div data-role="header" >
-	<h3>WebDJ</h3>
+	<h3>Web<font color="#7AC5CD">DJ</font></h3>
 	</div><!-- /header -->
 
 <div data-role="content" >
@@ -28,7 +28,7 @@
 			<p class="ui-li-count" align="center" >time:<br>$current.runtime</p>
 		</li>
 
-		<li data-theme="e">Top 10 Songs
+		<li data-theme="b">top voted songs
 			<ol data-role="listview" data-theme="c" >
 				#for $item in $charts
 				  <li>
@@ -40,7 +40,9 @@
 								<img src="$item.albumart" alt="albumart" class="ui-li-thumb">
 								<h2 class="ui-li-heading" style="white-space:normal" > <b>$item.artist</b> <br> <i>$item.song</i> </h2>
 								<span class="ui-li-count"> <h2> $item.votes </h2> </span>
+								<br>
 								</li>
+								<br>
 								<div data-role="controlgroup" data-theme="b">
 									<form action="/liked/$item.id" method="post" data-ajax="false">
 										<input type="submit" value="like" data-role="button" data-icon="plus" data-theme="f"/>
@@ -48,7 +50,7 @@
 									<form action="/hated/$item.id" method="post" data-ajax="false">
 										<input type="submit" value="hate" data-role="button" data-icon="minus" data-theme="g"/>
 									</form>
-									<a href="/" rel="external" data-role="button" data-icon="delete">Cancel</a>
+									<a href="/" rel="external" data-role="button" data-icon="delete">cancel</a>
 								
 							</div>
 						</ul>
@@ -57,11 +59,11 @@
 			</ol>
 		</li>
 	
-	<li data-theme="b">
-		<a href="/artists/" rel="external" class="ui-link-inherit">request a song</a
+	<li data-theme="f">
+		<a href="/artists/" rel="external" class="ui-link-inherit">suggest a song</a
 	</li>
 	
-	<li data-theme="c">
+	<li data-theme="e">
 		<a href="/search/" rel="external" class="ui-link-inherit">search artist</a
 	</li>
 	
