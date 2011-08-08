@@ -15,12 +15,33 @@
 							""];
 #end for
 
-function load_list(list_array) {
+	var alphabet = [#for $letter in $artists
+					"$letter[0]",
+					#end for
+					"123"];
+
+function load_list(list_array, nextPos) {
 	var newList = '<ul data-role="listview" data-theme="d" id="mylist" style="white-space:normal">' ;
-	newList += '<li><a href="/artists/" rel="external">...</a></li>';
+	newList += '<li data-theme="e" data-icon="arrow-l"><a href="/artists/" rel="external">... show overview</a></li>';
+	
+	// if users clicks on next letter in artists with z list, show him the first artist with 123 overview again
+	if (nextPos == alphabet.length ){
+		nextPos = 1;
+	}
+
+	if (nextPos != 1){
+		newList += '<li data-theme="b" data-icon="arrow-u" onclick="load_list(artists_' +alphabet[nextPos-2] +', '+(nextPos-1)+')"><a href="#">... show previous letter ' +alphabet[nextPos-2] +'</a></li>';
+	}
+	// if user clicks on previous letter in first overview then go to last overview
+	else{
+		newList += '<li data-theme="b" data-icon="arrow-u" onclick="load_list(artists_' +alphabet[alphabet.length-2] +', '+(alphabet.length-1)+')"><a href="#">... show previous letter ' +alphabet[alphabet.length-2] +'</a></li>';
+	}
+	
 	for (var i = 0; i < list_array.length-1; i++) {
 		newList += '<li><a href="/artists/?artist=' +list_array[i].replace("&","%26") +'">'+list_array[i] +'</a></li>';
 		}
+	
+	newList += '<li data-theme="b" data-icon="arrow-d"  onclick="load_list(artists_' +alphabet[nextPos] +', '+(nextPos+1)+')"><a href="#">... show next letter ' +alphabet[nextPos] +'</a></li>';
 	newList += '</ul>' ;
 	\$('#contentpage').html(newList);
 	\$("#mylist").listview();
@@ -40,11 +61,14 @@ function load_list(list_array) {
 
 <div data-role="content" id="contentpage">
 
+#set $letterpos = 0
+
 <!-- counting column number to put a, b or c to block class -->
 #set $counter=0
 
 		<div class="ui-grid-b">
 		#for $letter in $artists
+			#set letterpos += 1
 			<div class="ui-block-#slurp
 			#if $counter == 0
 a"> 
@@ -56,7 +80,7 @@ b">
 c"> 
 			#set $counter = 0
 			#end if
-				<div data-role="button" data-theme="a" onclick="load_list(artists_$letter[0])">
+				<div data-role="button" data-theme="a" onclick="load_list(artists_$letter[0], $letterpos)">
 					<h2>$letter[0]</h2>
 				</div>
 			</div>
