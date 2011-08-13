@@ -25,7 +25,7 @@ else:
 music_extList = [".mp3", ".ogg", ".MP3",".OGG",]
 
 # image for albumart name should also start with "folder.*"
-image_extList = [".jpg", ".png", ".JPG",".PNG",]
+image_extList = [".jpg", ".png", ".JPG",".PNG",".gif", ".GIF"]
 
 # scan recursiv through all folders
 for root, subFolders, files in os.walk(rootdir):

@@ -1,5 +1,6 @@
 # coding: utf-8
 import sqlite3
+import urllib
 import pprint
 import mpdPlayer
 from Cheetah.Template import Template
@@ -183,7 +184,8 @@ def buildTracks(albumname, artistname):
 						 releaseYear)							# releaseyear
 		tracks.append(myTrack)
 	
-	artistname = artistname.replace("&","%26")
+	#replacing "&" and other bad characters in url
+	artistname = urllib.quote(artistname)
 	
 	nameSpace = {'tracks': tracks, 'artist': artistname.encode('utf-8', 'replace')}
 	t= Template(file="templates/tracks.html", searchList=[nameSpace])
@@ -224,7 +226,8 @@ def buildAlben(artistname):
 					
 		alben.append(myAlbum)
 	
-	artistname = artistname.replace("&","%26")
+	#replacing "&" and other bad characters in url
+	artistname = urllib.quote(artistname)
 	
 	nameSpace = {'alben': alben, 'artist': artistname.encode('utf-8', 'replace')}
 	t= Template(file="templates/alben.html", searchList=[nameSpace])
@@ -250,7 +253,9 @@ def buildSearchpage():
 	artistList = []
 	
 	for i in artistsTuple:
-		artistList.append(i[0].encode('utf-8', 'replace'))
+		#replacing "&" and other bad characters in url
+		artistname = urllib.quote(i[0].encode('utf-8', 'replace'))
+		artistList.append(artistname)
 	
 	
 	nameSpace = {'artists': artistList }
