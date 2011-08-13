@@ -10,10 +10,11 @@ import settings
 
 
 class Album:
-	def __init__(self, name, coverpath, year):
-		self.name = name
+	def __init__(self, name, coverpath, year, url):
+		self.name = name	#albumname
 		self.coverpath = coverpath
 		self.year = year
+		self.url = url	#url friendly albumname without bad chars like &
 
 class Track:
 	def __init__(self, name, trackid, votes, runtime, albumname, albumart, year):
@@ -152,6 +153,10 @@ def buildArtists():
 
 def buildTracks(albumname, artistname):
 	
+	#remove escape characters from url
+	artistname = urllib.unquote(artistname)	
+	albumname = urllib.unquote(albumname)
+	
 	# open sqlite db connection
 	connection = sqlite3.connect("mucke.db")
 	cursor = connection.cursor()
@@ -179,13 +184,12 @@ def buildTracks(albumname, artistname):
 						 track[1],								# track id
 						 track[2],								# votes
 						 track[3],								# tracklength
-						 track[4].encode('utf-8', 'replace').replace("&","%26"),	# albumname
+						 track[4].encode('utf-8', 'replace'),	# albumname
 						 track[5].encode('utf-8', 'replace'),	# coverpath
 						 releaseYear)							# releaseyear
+						 
 		tracks.append(myTrack)
 	
-	#replacing "&" and other bad characters in url
-	artistname = urllib.quote(artistname)
 	
 	nameSpace = {'tracks': tracks, 'artist': artistname.encode('utf-8', 'replace')}
 	t= Template(file="templates/tracks.html", searchList=[nameSpace])
@@ -219,10 +223,14 @@ def buildAlben(artistname):
 			releaseYear = "-"
 		else :
 			releaseYear = result[2].encode('utf-8', 'replace')
-	
+		
+		#replacing "&" and url with %26
+		url = result[0].encode('utf-8', 'replace').replace("&","%26")
+		
 		myAlbum = Album(result[0].encode('utf-8', 'replace'),	# album name
 						result[1].encode('utf-8', 'replace'),	# coverpath
-						releaseYear)							# album release year
+						releaseYear,							# album release year
+						url)							# url friendly name
 					
 		alben.append(myAlbum)
 	
