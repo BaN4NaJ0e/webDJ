@@ -1,0 +1,15 @@
+<app>
+  <id>webdj-test</id>
+  <name>webDJ Test App</name>
+  <version>0.1</version>
+  <description>testing webdj features</description>
+  <thumb>http://www.nerdcave.de/testrepo/thumb.png</thumb>
+  <media>music</media>
+  <copyright>Hideki</copyright>
+  <email>hideki23@gmail.com</email>
+  <type>skin</type>
+  <platform>all</platform>
+  <minversion>0.9.22</minversion>
+  <startWindow>start</startWindow>
+  <test-app>true</test-app>
+</app>

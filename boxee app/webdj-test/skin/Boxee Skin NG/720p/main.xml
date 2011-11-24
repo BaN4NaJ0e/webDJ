@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<window type="window" id="14000">
+	<defaultcontrol always="true">120</defaultcontrol>
+	<allowoverlay>no</allowoverlay>
+	<onload lang="python"><![CDATA[
+print("### starting webserver")
+pid = runwebpy()
+print("### started webpy process with pid: %d" % pid)
+]]></onload>
+	<onunload lang="python"><![CDATA[
+print("### stopping webserver)
+stopwebpy()
+]]></onunload>
+	<controls>
+		<control type="image" id="120">
+			<width>1280</width>
+			<height>720</height>
+			<texture>black.png</texture>
+		</control>
+		<control type="label" id="130">
+			<posx>0</posx>
+			<posy>0</posy>
+			<width>200</width>
+			<height>500</height>
+			<align>left</align>
+			<font>font21b</font>
+			<color>white</color>
+			<label>webDJ Test App</label>
+		</control>	
+	</controls>
+</window>
